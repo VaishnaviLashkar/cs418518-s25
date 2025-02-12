@@ -137,62 +137,92 @@ const SignUpValidations = async (firstName, lastName, email, password) => {
 
     return null; 
 };
+const login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
 
-const login = async (req, res) =>{
-    try{
-        const { email , password } = req.body;
-        if(!email) {
-            return res.status(401).json({message:'Email is required for login'})
+        if (!email) {
+            return res.status(401).json({ success: false, message: 'Email is required for login', data: null });
         }
-        if(!password) {
-            return res.status(401).json({message:'Password is required for login'})
+        if (!password) {
+            return res.status(401).json({ success: false, message: 'Password is required for login', data: null });
         }
-        const user = await User.findOne({ email});
+
+        const user = await User.findOne({ email });
         if (!user) {
-            return res.status(401).json({message:'User does not exist'})
+            return res.status(401).json({ success: false, message: 'User does not exist', data: null });
         }
-        if(!user.isEmailVerified) {
-            return res.status(401).json({message:'User Email is not verified please signup again'});
+        if (!user.isEmailVerified) {
+            return res.status(401).json({ success: false, message: 'User email is not verified. Please sign up again.', data: null });
         }
-        if(!user.isApproved) {
-            return res.status(401).json({message:'User not verified please wait until admin accepts your request'});
+        if (!user.isApproved) {
+            return res.status(401).json({ success: false, message: 'User not verified. Please wait until admin approves your request.', data: null });
         }
+
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(401).json({message:'Password mismatch'});
+            return res.status(401).json({ success: false, message: 'Password mismatch', data: null });
         }
+
         const otp = generateOTP();
         const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
         user.otp = otp;
-        user.otpExpiresAt =expiresAt;
+        user.otpExpiresAt = expiresAt;
         await user.save();
-        await sendEmail(email, 'otpLogin', user.firstName,otp);
-        return res.status(200).json({message:'otp sent successfully'})
-    }catch (error) {
-        res.status(500).json({ message: 'login failed', error: error.message });
+        await sendEmail(email, 'otpLogin', user.firstName, otp);
+
+        return res.status(200).json({
+            success: true,
+            message: 'OTP sent successfully',
+            data: { email: user.email, otpSent: true }
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Login failed',
+            data: null,
+            error: error.message
+        });
     }
-}
+};
+
 const verifyOtpForLogin = async (req, res) => {
     try {
         const { email, otp } = req.body;
         const result = await verifyOtp(email, otp);
 
-        if (!result.success) return res.status(400).json({ message: result.message });
+        if (!result.success) {
+            return res.status(400).json({ success: false, message: result.message, data: null });
+        }
 
         const user = result.user;
         const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
-        return res.status(200).json({message :'Login Successful',token:token, user:{
-            userId: user._id,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName
-        }})
+        return res.status(200).json({
+            success: true,
+            message: 'Login successful',
+            data: {
+                token,
+                user: {
+                    userId: user._id,
+                    email: user.email,
+                    firstName: user.firstName,
+                    lastName: user.lastName
+                }
+            }
+        });
 
     } catch (error) {
-        res.status(500).json({ message: "Login verification failed", error: error.message });
+        return res.status(500).json({
+            success: false,
+            message: 'Login verification failed',
+            data: null,
+            error: error.message
+        });
     }
 };
+
 
 const resetPassword  = async(req, res) => {
     try{
