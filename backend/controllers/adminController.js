@@ -63,14 +63,23 @@ const approveUser = async (req, res) => {
 
 const getUsers = async(req, res) => {
     try{
-        const users = await User.find({isEmailVerified: true});
+        const email = req.query.email;
+        console.log("entered get users with email: " + email)
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        if(!user.isAdmin){
+            return res.status(404).json({ message: 'Operation Not allowed' });
+        }
+        const users = await User.find({ isAdmin: false , isEmailVerified:true});
         const count = users.length;
         if(count === 0){
             return res.status(400).json({message:'No users found'});
         }
-        return res.status(200).json({message:'Users fetched successfully', userCount: count, users : users});
+        return res.status(200).json({message:'Users fetched successfully', userCount: count, users :  Array.isArray(users) ? users : []});
     }catch (error) {
-        return res.status(500).json({ message: 'Cannot Fetch users', error: error.message });
+        return res.status(500).json({ message: 'Cannot Fetch users', error: error.message ,users: []});
     }
 };
 
