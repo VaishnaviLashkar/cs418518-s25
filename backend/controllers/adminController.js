@@ -64,7 +64,6 @@ const approveUser = async (req, res) => {
 const getUsers = async(req, res) => {
     try{
         const email = req.query.email;
-        console.log("entered get users with email: " + email)
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
