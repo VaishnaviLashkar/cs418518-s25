@@ -269,6 +269,7 @@ const verifyOtpForLogin = async (req, res) => {
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
+          isAdmin: user.isAdmin,
         },
       },
     });
@@ -285,6 +286,7 @@ const verifyOtpForLogin = async (req, res) => {
 const resetPassword = async (req, res) => {
   try {
     const { email, password, newPassword } = req.body;
+    
     if (!email || !password) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
@@ -336,8 +338,9 @@ const forgotPassword = async (req, res) => {
 const verifyOtpForForgotPassword = async (req, res) => {
   try {
     const { email, otp, newPassword } = req.body;
+    console.log("entered with email: " ,email,"password: " ,newPassword,"otp: " ,otp)
     const result = await verifyOtp(email, otp);
-
+    console.log("the result is",result);
     if (!result.success)
       return res.status(400).json({ message: result.message });
 
@@ -350,8 +353,25 @@ const verifyOtpForForgotPassword = async (req, res) => {
     user.otp = null;
     user.otpExpiresAt = null;
     await user.save();
-
-    return res.status(200).json({ message: "Password updated successfully" });
+    const token = jwt.sign(
+        { userId: user._id, email: user.email },
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
+      );
+    return res.status(200).json({
+        success: true,
+        message:  "Password updated successfully",
+        data: {
+          token,
+          user: {
+            userId: user._id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            isAdmin: user.isAdmin,
+          },
+        },
+      });
   } catch (error) {
     res
       .status(500)
