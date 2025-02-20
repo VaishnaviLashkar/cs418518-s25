@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import "./Signup.css";
 import { signUpUser, verifyOtpForSignup } from "../../api/auth";
 
-const Signup = ({ onSwitchToLogin }) => {
+const Signup = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     password: "",
-    termsAccepted: false,
   });
   const [otp, setOtp] = useState("");
   const [showOtpInput, setShowOtpInput] = useState(false);
@@ -18,13 +19,13 @@ const Signup = ({ onSwitchToLogin }) => {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
+
+  const onSwitchToLogin = () => navigate("/login");
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   const validateForm = () => {
@@ -33,21 +34,18 @@ const Signup = ({ onSwitchToLogin }) => {
     if (!formData.lastName.trim()) errors.lastName = "Last name is required.";
     if (!formData.email.includes("@")) errors.email = "Invalid email address.";
     if (formData.password.length < 6) errors.password = "Password must be at least 6 characters.";
-    if (!formData.termsAccepted) errors.termsAccepted = "You must accept the terms.";
     setErrors(errors);
     return Object.keys(errors).length === 0;
   };
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-    
+
     setLoading(true);
     try {
       const response = await signUpUser(formData.firstName, formData.lastName, formData.email, formData.password);
       if (response.status) {
-        console.log("entered response.success")
         setSuccessMessage(response.data.message);
         setShowOtpInput(true);
         setErrors({});
@@ -65,17 +63,10 @@ const Signup = ({ onSwitchToLogin }) => {
     setLoading(true);
     try {
       const response = await verifyOtpForSignup({ email: formData.email, otp });
-
       if (response.success) {
         setSuccessMessage("Account successfully verified! You can now log in.");
         setErrors({});
-        setFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          password: "",
-          termsAccepted: false,
-        });
+        setFormData({ firstName: "", lastName: "", email: "", password: "" });
       } else {
         setErrors({ form: response.message });
       }
@@ -85,22 +76,21 @@ const Signup = ({ onSwitchToLogin }) => {
     setLoading(false);
   };
 
+  useEffect(() => {
+    if (successMessage || errors.form) {
+      const timer = setTimeout(() => {
+        setSuccessMessage(null);
+        setErrors({});
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage, errors.form]);
+
   return (
     <div className="signup-container">
       <h2 className="signup-title">Sign Up</h2>
       {successMessage && <div className="success-text">{successMessage}</div>}
-
       {errors.form && <div className="error-text">{errors.form}</div>}
-
-      {useEffect(() => {
-        if (successMessage || errors.form) {
-          const timer = setTimeout(() => {
-            setSuccessMessage(null);
-            setErrors({});
-          }, 3000);
-          return () => clearTimeout(timer);
-        }
-      }, [successMessage, errors.form])}
 
       {!showOtpInput ? (
         <form onSubmit={handleSubmit} className="signup-form">
@@ -141,7 +131,7 @@ const Signup = ({ onSwitchToLogin }) => {
             {errors.email && <span className="error-text">{errors.email}</span>}
           </div>
 
-          <div className="input-group password-group">
+          <div className="input-group">
             <label>Password</label>
             <input
               type={showPassword ? "text" : "password"}
@@ -161,19 +151,6 @@ const Signup = ({ onSwitchToLogin }) => {
             )}
           </div>
 
-          <div className="checkbox-group">
-            <input
-              type="checkbox"
-              name="termsAccepted"
-              checked={formData.termsAccepted}
-              onChange={handleChange}
-            />
-            <label>I agree to the Terms and Conditions</label>
-            {errors.termsAccepted && (
-              <span className="error-text">{errors.termsAccepted}</span>
-            )}
-          </div>
-
           <button type="submit" className="submit-btn" disabled={loading}>
             {loading ? "Signing Up..." : "Sign Up"}
           </button>
@@ -190,7 +167,6 @@ const Signup = ({ onSwitchToLogin }) => {
             <input
               type="text"
               name="otp"
-              placeholder="Enter OTP"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
             />

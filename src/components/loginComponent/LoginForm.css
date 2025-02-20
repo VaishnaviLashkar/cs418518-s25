@@ -1,69 +1,100 @@
-
 .auth-container {
     background: #fff;
-    padding: 20px;
+    padding: 25px;
     max-width: 400px;
-    margin : auto;
-    margin-top: 200px;
+    margin: 100px auto;
     border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 h2 {
     text-align: center;
-    font-size: 24px;
-    margin-bottom: 15px;
+    font-size: 26px;
+    margin-bottom: 20px;
+    color: #333;
 }
 
 .error {
     color: red;
     font-size: 14px;
-    margin-top: 5px;
+    margin-bottom: 15px;
     text-align: center;
+    font-weight: bold;
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    text-align: left;
 }
 
 .form-group label {
     font-weight: bold;
+    font-size: 14px;
+    color: #444;
     display: block;
+    margin-bottom: 5px;
 }
 
 .form-group input {
-    width: 90%;
+    width: 100%;
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid #ccc;
     border-radius: 5px;
-    font-size: 16px;
-    margin-top: 5px;
+    font-size: 15px;
+    transition: border-color 0.3s;
 }
 
+.form-group input:focus {
+    outline: none;
+    border-color: teal;
+    box-shadow: 0 0 5px rgba(0, 128, 128, 0.2);
+}
 .password-group {
     position: relative;
+    margin-bottom: 20px; 
+}
+
+.password-group label {
+    font-weight: bold;
+    font-size: 14px;
+    color: #444;
+    display: block;
+    margin-bottom: 5px; 
 }
 
 .password-group input {
     width: 100%;
-    padding-right: 40px;
+    padding: 12px;
+    padding-right: 45px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+    height: 45px; 
 }
 
 .toggle-password {
     position: absolute;
-    right: 10px;
-    top: 38%;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
     background: none;
     border: none;
     cursor: pointer;
     font-size: 18px;
-    color: #555;
+    color: #777;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
 
 button[type="submit"] {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     font-size: 16px;
+    font-weight: bold;
     background: teal;
     color: white;
     border: none;
@@ -82,22 +113,35 @@ button:disabled {
 }
 
 .otp-container {
-    margin-top: 15px;
+    margin-top: 20px;
 }
 
 .otp-container input {
     text-align: center;
-    font-size: 18px;
-    letter-spacing: 2px;
+    font-size: 16px;
+    letter-spacing: 3px;
 }
 
 .switch-link {
     text-align: center;
-    margin-top: 10px;
+    margin-top: 15px;
 }
 
 .switch-link span {
     color: teal;
+    font-weight: bold;
     cursor: pointer;
     text-decoration: underline;
+    transition: color 0.3s;
+}
+
+.switch-link span:hover {
+    color: #005f5f;
+}
+
+@media (max-width: 480px) {
+    .auth-container {
+        width: 90%;
+        padding: 20px;
+    }
 }

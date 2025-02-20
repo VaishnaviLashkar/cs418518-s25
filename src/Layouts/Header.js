@@ -1,16 +1,32 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaUser } from "react-icons/fa";
+import { FaUserCircle } from "react-icons/fa";
+import { IoMdArrowDropdown } from "react-icons/io";
 import "./Header.css";
 
 const Header = () => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const navigate = useNavigate();
-  const isLoggedIn = localStorage.getItem("token") !== null;
+  const isLoggedIn = Boolean(localStorage.getItem("token"));
+
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    localStorage.clear();
     navigate("/login");
   };
+
+  const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
+
+  const handleClickOutside = (event) => {
+    if (!dropdownRef.current?.contains(event.target)) {
+      setIsDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <header className="header">
@@ -20,20 +36,9 @@ const Header = () => {
             <h2>Vyosomatrix</h2>
           </Link>
         </div>
-
         <nav className="nav-links">
           <Link to="/">Home</Link>
-          {isLoggedIn ? (
-            <>
-            
-              <button className="nav-btn" onClick={handleLogout}>
-                Logout
-              </button>
-              <Link to="/profile" className="nav-btn">
-                <FaUser /> Profile
-              </Link>
-            </>
-          ) : (
+          {!isLoggedIn ? (
             <>
               <Link to="/login" className="nav-btn">
                 Login
@@ -42,6 +47,22 @@ const Header = () => {
                 Signup
               </Link>
             </>
+          ) : (
+            <div className="nav-actions">
+              <div className="dropdown" ref={dropdownRef}>
+                <button className="dropdown-btn" onClick={toggleDropdown}>
+                  <FaUserCircle size={24} /> <IoMdArrowDropdown size={16} />
+                </button>
+                {isDropdownOpen && (
+                  <div className="dropdown-content">
+                    <Link to="/profile">Profile</Link>
+                    <Link to="/change-password">Change Password</Link>
+                    <Link to="/settings">Settings</Link>
+                    <button onClick={handleLogout}>Logout</button>
+                  </div>
+                )}
+              </div>
+            </div>
           )}
         </nav>
       </div>

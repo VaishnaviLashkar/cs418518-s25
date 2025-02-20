@@ -1,0 +1,108 @@
+.profile-container {
+    padding: 20px;
+    margin: 40px auto;
+    text-align: center;
+  }
+  
+  .profile-card {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    border: 2px solid black;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    max-width: 1000px;
+    margin: 20px auto;
+  }
+  .update-profile {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: rgb(77, 154, 254);
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 2px;
+    padding: 6px 10px;
+    border-radius: 15px;
+    cursor: pointer;
+  }
+  
+  .profile-card {
+    transform: translateY(-5px);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  
+  .profile-icon {
+    margin-right: 20px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    padding: 5px;
+  }
+  
+  .profile-details {
+    text-align: left;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .profile-details p {
+    margin: 8px 0;
+    color: #333;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  
+  .error-message {
+    color: red;
+    font-weight: bold;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  .edit-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .edit-actions button {
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 15px;
+    border: 2px solid black;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .edit-actions button:first-child {
+    background-color: #4CAF50;
+    color: white;
+    border-color: #4CAF50;
+  }
+  
+  .edit-actions button:first-child:hover {
+    background-color: #45A049;
+    border-color: #45A049;
+  }
+  
+  .edit-actions button:last-child {
+    background-color: #f44336;
+    color: white;
+    border-color: #f44336;
+  }
+  
+  .edit-actions button:last-child:hover {
+    background-color: #d32f2f;
+    border-color: #d32f2f;
+  }
+  
