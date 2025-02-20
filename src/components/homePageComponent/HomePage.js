@@ -49,7 +49,7 @@ const HomePageComponent = () => {
   };
 
   if (!isLoggedIn) {
-    return <div>Please log in to access this page.</div>;
+    return <div className = "no-users">Welcome to CS 518 Auth system. Please login to Access all Features</div>;
   }
 
   if (!isAdmin) {

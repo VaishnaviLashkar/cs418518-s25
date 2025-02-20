@@ -44,11 +44,7 @@ h2 {
     transition: border-color 0.3s;
 }
 
-.form-group input:focus {
-    outline: none;
-    border-color: teal;
-    box-shadow: 0 0 5px rgba(0, 128, 128, 0.2);
-}
+
 .password-group {
     position: relative;
     margin-bottom: 20px; 
@@ -75,18 +71,20 @@ h2 {
 
 .toggle-password {
     position: absolute;
-    right: 12px;
-    top: 50%;
+    right: 10px;
+    top: 67%;
     transform: translateY(-50%);
-    background: none;
+    background: none !important; 
     border: none;
     cursor: pointer;
     font-size: 18px;
     color: #777;
     padding: 5px;
+    z-index: 10;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: right;
+    height: 100%; 
 }
 
 
@@ -103,9 +101,7 @@ button[type="submit"] {
     transition: background 0.3s;
 }
 
-button[type="submit"]:hover {
-    background: #005f5f;
-}
+
 
 button:disabled {
     background: gray;
@@ -135,9 +131,6 @@ button:disabled {
     transition: color 0.3s;
 }
 
-.switch-link span:hover {
-    color: #005f5f;
-}
 
 @media (max-width: 480px) {
     .auth-container {
