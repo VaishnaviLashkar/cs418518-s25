@@ -1,0 +1,56 @@
+[{
+  "_id": {
+    "$oid": "67c75f6ae468a3de86bb666e"
+  },
+  "firstName": "Vaishnavi",
+  "lastName": "Lashkar",
+  "email": "vaishnavilashkar27@gmail.com",
+  "password": "$2a$10$4ps7cEJ919/c3AQVH.LCDOBiaji7q3c/M7pW7fzGb6DY6ZldFjBqG",
+  "isAdmin": true,
+  "isApproved": false,
+  "isEmailVerified": true,
+  "createdAt": {
+    "$date": "2025-03-04T20:15:38.286Z"
+  },
+  "__v": 0,
+  "otp": null,
+  "otpExpiresAt": null
+},
+{
+  "_id": {
+    "$oid": "67c75fb3e468a3de86bb6671"
+  },
+  "firstName": "Vaishnavi",
+  "lastName": "L",
+  "email": "lashkarvaishnavi26@gmail.com",
+  "password": "$2a$10$WY8kct244K4/0w6KA5pko.AJnn9oX46KJ2XKhAppbAVLZSQt8UZQ6",
+  "isAdmin": false,
+  "isApproved": false,
+  "isEmailVerified": true,
+  "otp": null,
+  "otpExpiresAt": null,
+  "createdAt": {
+    "$date": "2025-03-04T20:16:51.001Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67c760b0e468a3de86bb667d"
+  },
+  "firstName": "Vaishnavi",
+  "lastName": "Lashkar",
+  "email": "mb.techorix@gmail.com",
+  "password": "$2a$10$ClfMAdeCAv8ZVYQWZJDCHeV.nw2H301gxjRTWrUrMi3MYvCKJcNi.",
+  "isAdmin": false,
+  "isApproved": false,
+  "isEmailVerified": false,
+  "otp": "1323",
+  "otpExpiresAt": {
+    "$date": "2025-03-04T20:31:04.021Z"
+  },
+  "createdAt": {
+    "$date": "2025-03-04T20:21:04.021Z"
+  },
+  "__v": 0
+}]
