@@ -22,6 +22,7 @@ const SignUp = async (req, res) => {
       email,
       password
     );
+    console.log("the error messages is ", errorMessage)
     if (errorMessage) {
       return res.status(400).json({ message: errorMessage });
     }
@@ -155,7 +156,7 @@ const SignUpValidations = async (firstName, lastName, email, password) => {
   }
   const passwordError = passwordValidation(password);
   if (passwordError) {
-    return res.status(400).json({ message: passwordError });
+    return passwordError;
   }
 
   return null;
@@ -199,19 +200,7 @@ const login = async (req, res) => {
           data: null,
         });
     }
-    if (!user.isAdmin) {
-      if (!user.isApproved) {
-        return res
-          .status(401)
-          .json({
-            success: false,
-            message:
-              "User not verified. Please wait until admin approves your request.",
-            data: null,
-          });
-      }
-    }
-
+   
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res

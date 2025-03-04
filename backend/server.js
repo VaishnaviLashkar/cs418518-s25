@@ -1,8 +1,6 @@
 require('dotenv').config();
-console.log("ENV LOADED: ", process.env);
 const express = require('express');
 const cors = require("cors");
-
 const connectDB = require('./config/db');
 const routes = require('./routes')
 const app = express();

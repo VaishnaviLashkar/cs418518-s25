@@ -22,7 +22,6 @@ const createAdmin = async (req, res) => {
             lastName,
             email,
             password: hashedPassword,
-            isApproved: true,
             isEmailVerified: true,
             isAdmin: true, 
         });
@@ -47,13 +46,8 @@ const approveUser = async (req, res) => {
         if (!isApprove) {
             await User.deleteOne({ email }); 
             await sendEmail(email, 'reject', user.firstName);
-            return res.status(200).json({ message: 'User rejected and removed' });
+            return res.status(200).json({ message: 'User removed' });
         }
-
-        user.isApproved = true;
-        await user.save(); 
-        await sendEmail(email, 'approve', user.firstName);
-        return res.status(200).json({ message: 'User approved successfully' });
 
     } catch (error) {
         return res.status(500).json({ message: 'User approval failed', error: error.message });
