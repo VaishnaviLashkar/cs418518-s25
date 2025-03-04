@@ -63,10 +63,15 @@ const Signup = () => {
     setLoading(true);
     try {
       const response = await verifyOtpForSignup({ email: formData.email, otp });
-      if (response.success) {
+      console.log("the response from signup",response)
+      if (response) {
         setSuccessMessage("Account successfully verified! You can now log in.");
         setErrors({});
         setFormData({ firstName: "", lastName: "", email: "", password: "" });
+        localStorage.setItem("token", response.token);
+        localStorage.setItem("user", JSON.stringify(response.user));
+        localStorage.setItem("isAdmin", JSON.stringify(response.user.isAdmin));
+        navigate("/dashboard");
       } else {
         setErrors({ form: response.message });
       }
@@ -131,21 +136,25 @@ const Signup = () => {
             {errors.email && <span className="error-text">{errors.email}</span>}
           </div>
 
-          <div className="input-group">
+          <div className="form-group password-group">
             <label>Password</label>
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-            />
-            <button
-              type="button"
-              className="toggle-password"
-              onClick={togglePasswordVisibility}
-            >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </button>
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+              <button
+                type="button"
+                className="eye-icon"
+                onClick={togglePasswordVisibility}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
             {errors.password && (
               <span className="error-text">{errors.password}</span>
             )}

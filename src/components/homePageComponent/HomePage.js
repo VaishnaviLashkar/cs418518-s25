@@ -4,7 +4,7 @@ import "./HomePage.css";
 
 const HomePageComponent = () => {
   const isLoggedIn = Boolean(localStorage.getItem("token"));
-  const isAdmin = localStorage.getItem("isAdmin");
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
   console.log(`isAdmin: ${isAdmin}`);
   const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : {};
   const adminEmail = user?.email || "";

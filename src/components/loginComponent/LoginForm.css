@@ -70,21 +70,9 @@ h2 {
 }
 
 .toggle-password {
-    position: absolute;
-    right: 10px;
-    top: 67%;
-    transform: translateY(-50%);
-    background: none !important; 
-    border: none;
-    cursor: pointer;
     font-size: 18px;
     color: #777;
-    padding: 5px;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: right;
-    height: 100%; 
+    cursor: pointer;
 }
 
 
@@ -102,6 +90,45 @@ button[type="submit"] {
 }
 
 
+
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding: 12px;
+    padding-right: 40px; 
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    height: 45px;
+    box-sizing: border-box;
+}
+
+.eye-icon {
+    position: absolute;
+    right: 10px;
+    top: 60%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: rgba(0, 0, 0, 0.5); 
+    padding: 0;
+    display: flex;
+    align-items: right;
+    justify-content: right;
+    width: 30px;  
+    height: 30px; 
+}
+
+.eye-icon:hover {
+    color: rgba(0, 0, 0, 0.8); 
+    background: transparent; 
+}
 
 button:disabled {
     background: gray;

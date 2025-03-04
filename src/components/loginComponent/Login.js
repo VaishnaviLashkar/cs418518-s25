@@ -75,21 +75,25 @@ const LoginPage = () => {
 
           <div className="form-group password-group">
             <label>Password</label>
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              placeholder="Enter your password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
-            <button
-              type="button"
-              className="toggle-password"
-              onClick={togglePasswordVisibility}
-            >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </button>
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
+                required
+              />
+              <button
+                type="button"
+                className="eye-icon"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
           </div>
 
           <button type="submit" disabled={loading}>
