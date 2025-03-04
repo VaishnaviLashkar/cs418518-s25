@@ -14,11 +14,19 @@
     margin-bottom: 15px;
 }
 
-.signup-form .input-group {
+.signup-form  {
     margin-bottom: 15px;
     text-align: left;
     position: relative;
+
 }
+.input-group {
+    margin-bottom: 25px;
+    text-align: left;
+    position: relative;
+}
+
+
 
 .input-group label {
     font-weight: bold;
@@ -89,6 +97,7 @@
 .submit-btn {
     width: 100%;
     padding: 10px;
+    padding-top: 20px;
     background: teal;
     color: white;
     border: none;

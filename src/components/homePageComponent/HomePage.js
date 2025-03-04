@@ -33,20 +33,21 @@ const HomePageComponent = () => {
     }
   };
 
-  const handleApprove = async (email, approveStatus) => {
+  const handleApprove = async (email) => { 
     try {
-      const data = await approveUser(email, approveStatus);
+      const data = await approveUser(email, false); 
       if (data) {
-        setMessage(`User ${email} has been ${approveStatus ? "approved" : "rejected"}`);
-        setMessageType(approveStatus ? "success" : "error");
+        setMessage(`User ${email} has been deleted`);
+        setMessageType("error");
         getAllUsers();
       }
     } catch (error) {
-      setMessage("Error updating user status");
+      setMessage("Error deleting user");
       setMessageType("error");
-      console.error("Approval Error:", error);
+      console.error("Deletion Error:", error);
     }
   };
+  
 
   if (!isLoggedIn) {
     return <div className = "no-users">Welcome to CS 518 Auth system. Please login to Access all Features</div>;
@@ -74,11 +75,8 @@ const HomePageComponent = () => {
                   <span className="approved-badge">Approved</span>
                 ) : (
                   <div className="action-buttons">
-                    <button className="approve-btn" onClick={() => handleApprove(user.email, true)}>
-                      Approve
-                    </button>
                     <button className="reject-btn" onClick={() => handleApprove(user.email, false)}>
-                      Reject
+                     Delete User
                     </button>
                   </div>
                 )}

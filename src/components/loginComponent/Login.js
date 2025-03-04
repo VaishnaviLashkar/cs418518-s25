@@ -42,11 +42,11 @@ const LoginPage = () => {
     e.preventDefault();
     setLoading(true);
     const response = await verifyOtpForLogin({ email: formData.email, otp });
-    console.log("the response is", response);
-    if (response.success) {
+    console.log("the response for login is", response);
+    if (response) {
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
-      localStorage.setItem("isAdmin", JSON.stringify(response.user.isAdmin));
+      localStorage.setItem("isAdmin", JSON.stringify(response.data.user.isAdmin));
       navigate("/dashboard");
     } else {
       setErrors({ form: response.message });
