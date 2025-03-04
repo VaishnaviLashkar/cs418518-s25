@@ -3,6 +3,37 @@ const User = require('../models/user.model');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+
+const passwordValidation = (password) => {
+    const passwordRegex =
+      /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    if (!password || !passwordRegex.test(password)) {
+      return "Password must be at least 6 characters long, include at least one uppercase letter, one number, and one special character";
+    }
+    return null; // No error
+  };
+  
+  const SignUpValidations = async (firstName, lastName, email, password) => {
+    if (!firstName || firstName.length < 2) {
+      return "First name must be at least 2 characters long";
+    }
+  
+    if (!lastName || lastName.length < 2) {
+      return "Last name must be at least 2 characters long";
+    }
+    console.log("entered validation with email", email);
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!email || !emailRegex.test(email)) {
+      return "Invalid email format";
+    }
+    const passwordError = passwordValidation(password);
+    if (passwordError) {
+      return passwordError;
+    }
+  
+    return null;
+  };
+
 const createAdmin = async (req, res) => {
     try {
         
