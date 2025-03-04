@@ -33,7 +33,7 @@ const Header = () => {
       <div className="header-container">
         <div className="logo">
           <Link to="/">
-            <h2>Vyosomatrix</h2>
+            <h2>Advisor</h2>
           </Link>
         </div>
         <nav className="nav-links">
