@@ -1,0 +1,135 @@
+.signup-container {
+    background: #fff;
+    padding: 20px;
+    max-width: 400px;
+    margin: auto;
+    margin-top: 50px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.signup-title {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.signup-form  {
+    margin-bottom: 15px;
+    text-align: left;
+    position: relative;
+
+}
+.input-group {
+    margin-bottom: 25px;
+    text-align: left;
+    position: relative;
+}
+
+
+
+.input-group label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+}
+.password-group {
+    position: relative;
+    margin-bottom: 20px; 
+}
+
+.password-group label {
+    font-weight: bold;
+    font-size: 14px;
+    color: #444;
+    display: block;
+    margin-bottom: 5px; 
+}
+
+.password-group input {
+    width: 100%;
+    padding: 12px;
+    padding-right: 45px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+    height: 45px; 
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 67%;
+    transform: translateY(-50%);
+    background: none !important; 
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #777;
+    padding: 5px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    height: 100%; 
+}
+
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.checkbox-group input {
+    margin-right: 8px;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 10px;
+    padding-top: 20px;
+    background: teal;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.submit-btn:disabled {
+    background: gray;
+}
+
+.error-text {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.success-text {
+    color: green;
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.switch-link {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.switch-link span {
+    color: teal;
+    cursor: pointer;
+    text-decoration: underline;
+}
