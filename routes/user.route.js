@@ -10,6 +10,7 @@ router.post('/resendOtp', userController.resendOtp);
 router.post('/verifyOtpForLogin', userController.verifyOtpForLogin);
 router.post('/resetPassword', userController.resetPassword);
 router.post('/forgotPassword', userController.forgotPassword);
+router.post('/createForm', userController.createAdvisingForm );
 router.post('/verifyOtpForForgotPassword', userController.verifyOtpForForgotPassword);
 router.post('/updateUserInformation', userController.updateUserInformation);
 router.get('/getUserInfo', userController.getUserInfo);

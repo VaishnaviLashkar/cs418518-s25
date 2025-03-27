@@ -1,4 +1,6 @@
 const sendEmail = require("../utils/sendEmail");
+const CourseAdvising = require('../models/courseAdvising.model');
+const CompletedCourse = require('../models/completedCourse.model');
 const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -22,6 +24,7 @@ const SignUp = async (req, res) => {
       email,
       password
     );
+    
     console.log("the error messages is ", errorMessage)
     if (errorMessage) {
       return res.status(400).json({ message: errorMessage });
@@ -34,16 +37,18 @@ const SignUp = async (req, res) => {
     const otp = generateOTP();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
-    if (existingUser && !existingUser.isEmailVerified) {
-      existingUser.password = hashedPassword;
-      existingUser.otp = otp;
-      existingUser.otpExpiresAt = expiresAt;
-      existingUser.isApproved = false;
-      await existingUser.save();
-      await sendEmail(email, "otp", existingUser.firstName, otp);
-      return res
-        .status(200)
-        .json({ message: "OTP sent, check email for verification" });
+    if (existingUser) {
+      if (!existingUser.isEmailVerified) {
+        existingUser.password = hashedPassword;
+        existingUser.otp = otp;
+        existingUser.otpExpiresAt = expiresAt;
+        existingUser.isApproved = false;
+        await existingUser.save();
+        await sendEmail(email, "otp", existingUser.firstName, otp);
+        return res.status(200).json({ message: "OTP sent, check email for verification" });
+      } else {
+        return res.status(400).json({ message: "User with this email already exists. Please Login." });
+      }
     }
 
     const newUser = new User({
@@ -424,6 +429,47 @@ const getUserInfo = async(req, res) => {
           });
       }
 };
+
+const createAdvisingForm = async (req, res) => {
+  try {
+    const { studentId, lastTerm, currentTerm, lastGPA, coursePlan } = req.body;
+
+    if (!studentId || !lastTerm || !currentTerm || lastGPA === undefined || !Array.isArray(coursePlan)) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const completedCourses = await CompletedCourse.find({ student: studentId, term: lastTerm }).populate('course');
+    const completedCourseNames = completedCourses.map(item => item.course.courseName);
+
+    for (let plan of coursePlan) {
+      if (completedCourseNames.includes(plan.courseName)) {
+        return res.status(400).json({
+          message: `Course "${plan.courseName}" was already completed in last term and cannot be added again.`
+        });
+      }
+    }
+
+    const newAdvising = new CourseAdvising({
+      student: studentId,
+      lastTerm,
+      currentTerm,
+      lastGPA,
+      term: currentTerm,
+      coursePlan,
+    });
+
+    await newAdvising.save();
+
+    res.status(201).json({
+      message: "Advising form submitted successfully",
+      advising: newAdvising,
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
 module.exports = {
   SignUp,
   login,
@@ -434,5 +480,6 @@ module.exports = {
   forgotPassword,
   verifyOtpForForgotPassword,
   updateUserInformation,
-  getUserInfo
+  getUserInfo,
+  createAdvisingForm 
 };
