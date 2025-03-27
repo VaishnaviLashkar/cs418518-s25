@@ -1,0 +1,92 @@
+.create-advising-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 32px;
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .create-advising-container h2 {
+    font-size: 32px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  
+  .header-section,
+  .course-section {
+    margin-bottom: 20px;
+  }
+  
+  .section-title {
+    font-size: 24px;
+    font-weight: 500;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 6px;
+    margin-bottom: 16px;
+    color: #111;
+  }
+  
+  .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .form-row label {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    margin-right: 8px;
+  }
+  
+  .form-row select,
+  .form-row input {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+    min-width: 160px;
+    flex: 1;
+  }
+  
+  .course-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .course-row select {
+    flex: 1;
+  }
+  
+  button {
+    background-color: #0b3558;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    width: 100%;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  
+  button:hover {
+    background-color: #06263f;
+  }
+  
+  .message {
+    text-align: center;
+    margin-bottom: 16px;
+    font-weight: 500;
+    color: #006400;
+    background-color: #e6ffe6;
+    padding: 8px 12px;
+    border-radius: 6px;
+  }
+  

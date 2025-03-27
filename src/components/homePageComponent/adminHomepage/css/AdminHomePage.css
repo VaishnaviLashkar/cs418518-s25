@@ -1,0 +1,30 @@
+.admin-homepage {
+    font-family: sans-serif;
+  }
+  
+  .tab-header {
+    display: flex;
+    border-bottom: 2px solid #004080;
+    background-color: #f5f5f5;
+  }
+  
+  .tab-header button {
+    flex: 1;
+    padding: 12px 0;
+    border: none;
+    background: transparent;
+    font-weight: bold;
+    cursor: pointer;
+    color: #004080;
+  }
+  
+  .tab-header button.active {
+    border-bottom: 3px solid #004080;
+    background-color: #fff;
+  }
+  
+  .tab-content {
+    padding: 20px;
+    background-color: white;
+  }
+  
