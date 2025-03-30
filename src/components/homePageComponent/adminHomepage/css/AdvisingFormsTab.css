@@ -1,0 +1,72 @@
+.advising-tab-container {
+    padding: 1.5rem;
+    background: #fff;
+  }
+  
+  .advising-details {
+    background: #003366;
+    color: #fff;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+  }
+  
+  .advising-box-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .advising-box {
+    flex: 1;
+    min-width: 200px;
+    background: #002244;
+    padding: 1rem;
+    border-radius: 6px;
+  }
+  
+  .advising-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  
+  .advising-table th,
+  .advising-table td {
+    padding: 10px;
+    border: 1px solid #ccc;
+  }
+  
+  .notes-input {
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+  }
+  
+  .action-buttons {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .accept-btn {
+    background-color: green;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .reject-btn {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  

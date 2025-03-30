@@ -85,7 +85,7 @@ export const getAllTerms = async () => {
 
 export const getCourseLevels = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/admin/getCourseLevels`);
+    const response = await axios.get(`${API_BASE_URL}/admin/getPreCourseLevels`);
     return response.data.levels;
   } catch (error) {
     console.error("Error fetching course levels:", error);
@@ -95,7 +95,7 @@ export const getCourseLevels = async () => {
 
 export const getCoursesByLevel = async (level) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/admin/getCourseByLevel/${level}`);
+    const response = await axios.get(`${API_BASE_URL}/admin/getPreCourseByLevel/${level}`);
     return response.data.courses;
   } catch (error) {
     console.error(`Error fetching courses for level ${level}:`, error);
@@ -118,6 +118,26 @@ export const getStudentAdvisingForms = async (studentId) => {
     return response.data;
   } catch (error) {
     console.error("Error fetching advising forms:", error.response?.data?.message || error.message);
+    return [];
+  }
+};
+
+export const getAllCourseLevels = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/admin/getAllCourseLevels`);
+    return response.data.levels;
+  } catch (error) {
+    console.error("Error fetching course levels:", error);
+    return [];
+  }
+};
+
+export const getAllCoursesByLevel = async (level) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/admin/getAllCoursesByLevel/${level}`);
+    return response.data.courses;
+  } catch (error) {
+    console.error(`Error fetching courses for level ${level}:`, error);
     return [];
   }
 };

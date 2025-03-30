@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { getStudentAdvisingForms } from "../../../api/user";
-import CreateAdvisingForm from "./CreateAdvisingForm";
-import Modal from "../Modal"; 
 import "../css/AdvisingHistory.css";
 
-const AdvisingHistory = () => {
+const AdvisingHistory = ({ onEdit }) => {
   const [advisingRecords, setAdvisingRecords] = useState([]);
-  const [selectedRecord, setSelectedRecord] = useState(null);
   const user = JSON.parse(localStorage.getItem("user"));
   const studentId = user?.userId;
 
@@ -40,7 +37,7 @@ const AdvisingHistory = () => {
                 <td>{record.status}</td>
                 <td>
                   {record.status === "Pending" ? (
-                    <button onClick={() => setSelectedRecord(record)} className="edit-btn">Edit</button>
+                    <button onClick={() => onEdit(record)} className="edit-btn">Edit</button>
                   ) : "-"}
                 </td>
               </tr>
@@ -52,17 +49,6 @@ const AdvisingHistory = () => {
           )}
         </tbody>
       </table>
-
-      {selectedRecord && (
-        <Modal onClose={() => setSelectedRecord(null)}>
-          <CreateAdvisingForm
-            initialData={selectedRecord}
-            isEdit={true}
-            onClose={() => setSelectedRecord(null)}
-            onSuccess={fetchAdvisingRecords}
-          />
-        </Modal>
-      )}
     </div>
   );
 };

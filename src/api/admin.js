@@ -55,3 +55,13 @@ export const getAllCourses = async () => {
       };
     }
   };
+
+  export const getAllCourseAdvisingForms = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/admin/getAllAdvisingForms`);
+      return response.data.forms;
+    } catch (error) {
+      console.error("Error fetching advising forms:", error);
+      return [];
+    }
+  };

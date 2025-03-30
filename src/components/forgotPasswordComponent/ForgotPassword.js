@@ -71,7 +71,7 @@ const ForgotPassword = () => {
                     console.warn("isAdmin property missing in response");
                 }
     
-                console.log("crossed the localStorage"); // Check if this logs
+                console.log("crossed the localStorage"); 
                 setMessage("Password reset successfully! Redirecting to login...");
     
                 setTimeout(() => {
