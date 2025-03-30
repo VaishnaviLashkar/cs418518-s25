@@ -432,10 +432,20 @@ const getUserInfo = async(req, res) => {
 
 const createAdvisingForm = async (req, res) => {
   try {
-    const { studentId, lastTerm, currentTerm, lastGPA, coursePlan } = req.body;
+    const { studentId, lastTerm, currentTerm, lastGPA, prerequisites = [], coursePlan } = req.body;
 
     if (!studentId || !lastTerm || !currentTerm || lastGPA === undefined || !Array.isArray(coursePlan)) {
       return res.status(400).json({ message: "All fields are required" });
+    }
+
+    if (!Array.isArray(prerequisites)) {
+      return res.status(400).json({ message: "Prerequisites should be an array if provided" });
+    }
+
+    const allCourses = [...prerequisites, ...coursePlan].map(c => c.courseName);
+    const uniqueCourses = new Set(allCourses);
+    if (allCourses.length !== uniqueCourses.size) {
+      return res.status(400).json({ message: "Duplicate courses are not allowed across prerequisites and course plan." });
     }
 
     const completedCourses = await CompletedCourse.find({ student: studentId, term: lastTerm }).populate('course');
@@ -444,7 +454,7 @@ const createAdvisingForm = async (req, res) => {
     for (let plan of coursePlan) {
       if (completedCourseNames.includes(plan.courseName)) {
         return res.status(400).json({
-          message: `Course "${plan.courseName}" was already completed in last term and cannot be added again.`
+          message: `Course "${plan.courseName}" was already completed in the last term and cannot be added again.`
         });
       }
     }
@@ -455,6 +465,7 @@ const createAdvisingForm = async (req, res) => {
       currentTerm,
       lastGPA,
       term: currentTerm,
+      prerequisites,
       coursePlan,
     });
 
@@ -469,6 +480,82 @@ const createAdvisingForm = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+const updateAdvisingForm = async (req, res) => {
+  try {
+    const advisingId = req.params.id;
+    const { studentId, lastTerm, currentTerm, lastGPA, prerequisites = [], coursePlan } = req.body;
+
+    if (!advisingId || !studentId || !lastTerm || !currentTerm || lastGPA === undefined || !Array.isArray(coursePlan)) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    if (!Array.isArray(prerequisites)) {
+      return res.status(400).json({ message: "Prerequisites should be an array if provided" });
+    }
+
+    const advisingRecord = await CourseAdvising.findById(advisingId);
+    if (!advisingRecord) {
+      return res.status(404).json({ message: "Advising record not found" });
+    }
+
+    if (advisingRecord.status !== "Pending") {
+      return res.status(400).json({ message: "Only pending advising records can be updated" });
+    }
+
+    const allCourses = [...prerequisites, ...coursePlan].map(c => c.courseName);
+    const uniqueCourses = new Set(allCourses);
+    if (allCourses.length !== uniqueCourses.size) {
+      return res.status(400).json({ message: "Duplicate courses are not allowed across prerequisites and course plan." });
+    }
+
+    const completedCourses = await CompletedCourse.find({ student: studentId, term: lastTerm }).populate("course");
+    const completedCourseNames = completedCourses.map(item => item.course.courseName);
+
+    for (let plan of coursePlan) {
+      if (completedCourseNames.includes(plan.courseName)) {
+        return res.status(400).json({
+          message: `Course "${plan.courseName}" was already completed in the last term and cannot be added again.`
+        });
+      }
+    }
+
+    advisingRecord.student = studentId;
+    advisingRecord.lastTerm = lastTerm;
+    advisingRecord.currentTerm = currentTerm;
+    advisingRecord.lastGPA = lastGPA;
+    advisingRecord.term = currentTerm;
+    advisingRecord.prerequisites = prerequisites;
+    advisingRecord.coursePlan = coursePlan;
+
+    await advisingRecord.save();
+
+    res.status(200).json({
+      message: "Advising form updated successfully",
+      advising: advisingRecord,
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+const getAdvisingFormsByStudent = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+
+    if (!studentId) {
+      return res.status(400).json({ message: "Student ID is required" });
+    }
+
+    const records = await CourseAdvising.find({ student: studentId })
+      .populate('term', 'name')
+      .sort({ date: -1 });
+
+    res.status(200).json(records);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch advising forms", error: error.message });
+  }
+};
+
 
 module.exports = {
   SignUp,
@@ -481,5 +568,7 @@ module.exports = {
   verifyOtpForForgotPassword,
   updateUserInformation,
   getUserInfo,
-  createAdvisingForm 
+  createAdvisingForm,
+  getAdvisingFormsByStudent,
+  updateAdvisingForm
 };

@@ -10,6 +10,12 @@ const CourseAdvisingSchema = new mongoose.Schema({
   currentTerm: { type: mongoose.Schema.Types.ObjectId, ref: 'Term', required: true },
   lastGPA: { type: Number, required: true },
 
+  prerequisites: [
+    {
+      level: { type: String, required: true },
+      courseName: { type: String, required: true }
+    }
+  ],
 
   coursePlan: [
     {

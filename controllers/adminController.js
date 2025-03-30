@@ -3,6 +3,7 @@ const Course = require("../models/course.model");
 const User = require("../models/user.model");
 const Term = require('../models/term.model');
 const bcrypt = require("bcryptjs");
+const CourseAdvising = require('../models/courseAdvising.model');
 const jwt = require("jsonwebtoken");
 
 const passwordValidation = (password) => {
@@ -292,6 +293,49 @@ const getPrerequisiteCourseLevels = async (req, res) => {
     }
   };
 
+  const getAllCourseLevels = async (req, res) => {
+    try {
+      const levels = await Course.distinct("level"); 
+  
+      if (!levels.length) {
+        return res.status(404).json({ message: "No course levels found" });
+      }
+  
+      return res.status(200).json({
+        message: "Course levels fetched successfully",
+        levels,
+      });
+    } catch (error) {
+      return res.status(500).json({ message: "Failed to fetch levels", error: error.message });
+    }
+  };
+  
+  const getAllCoursesByLevel = async (req, res) => {
+    try {
+      const { level } = req.params;
+  
+      if (!level) {
+        return res.status(400).json({ message: "Level parameter is required" });
+      }
+  
+      const courses = await Course.find({ level }); 
+  
+      if (!courses.length) {
+        return res.status(404).json({ message: "No courses found for this level" });
+      }
+  
+      return res.status(200).json({
+        message: "Courses fetched successfully",
+        level,
+        courses,
+      });
+    } catch (error) {
+      return res.status(500).json({ message: "Failed to fetch courses", error: error.message });
+    }
+  };
+  
+
+
 
   const createTerm = async (req, res) => {
     try {
@@ -329,6 +373,30 @@ const getPrerequisiteCourseLevels = async (req, res) => {
       res.status(500).json({ message: "Failed to fetch terms", error: error.message });
     }
   };
+
+
+
+  const getAllAdvisingForms = async (req, res) => {
+    try {
+      const forms = await CourseAdvising.find()
+        .populate("student", "firstName lastName email")
+        .populate("lastTerm", "name")
+        .populate("currentTerm", "name")
+        .sort({ date: -1 }); 
+  
+      if (!forms.length) {
+        return res.status(404).json({ message: "No advising forms found" });
+      }
+  
+      return res.status(200).json({
+        message: "Advising forms fetched successfully",
+        forms,
+      });
+    } catch (error) {
+      return res.status(500).json({ message: "Failed to fetch advising forms", error: error.message });
+    }
+  };
+  
 module.exports = {
   createAdmin,
   approveUser,
@@ -340,5 +408,8 @@ module.exports = {
   getPrerequisiteCourseLevels,
   getPrerequisiteCoursesByLevel,
   createTerm,
-  getAllTerms
+  getAllTerms,
+  getAllCoursesByLevel,
+  getAllCourseLevels,
+  getAllAdvisingForms
 };
