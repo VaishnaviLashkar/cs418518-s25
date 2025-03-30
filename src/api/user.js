@@ -51,7 +51,25 @@ export const createAdvisingForm = async (data) => {
   }
 };
 
-
+export const updateAdvisingForm = async (advisingId, payload) => {
+  try {
+    const response = await axios.put(
+      `${API_BASE_URL}/users/updateAdvisingForm/${advisingId}`,
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating advising form:", error.response?.data?.message || error.message);
+    return {
+      message: "Failed to update advising form"
+    };
+  }
+};
 
 export const getAllTerms = async () => {
   try {
@@ -91,6 +109,15 @@ export const getAllCourses = async () => {
     return response.data.courses;
   } catch (error) {
     console.error("Error fetching all courses:", error);
+    return [];
+  }
+};
+export const getStudentAdvisingForms = async (studentId) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/users/getStudentForms/${studentId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching advising forms:", error.response?.data?.message || error.message);
     return [];
   }
 };

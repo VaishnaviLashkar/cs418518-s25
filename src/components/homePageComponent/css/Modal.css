@@ -1,0 +1,57 @@
+.modal-backdrop {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+  
+  .modal-content {
+    background-color: white;
+    border-radius: 10px;
+    padding: 30px;
+    max-width: 900px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.2s ease-in-out;
+  }
+  
+  /* Optional animation */
+  @keyframes fadeIn {
+    from {
+      transform: scale(0.98);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  .modal-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: none;
+    font-size: 24px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    color: #333;
+    z-index: 1001;
+    line-height: 1;
+    padding: 0;
+  }
+  
+  .modal-close-btn:hover {
+    color: #e60000;
+    transform: scale(1.1);
+  }
+  

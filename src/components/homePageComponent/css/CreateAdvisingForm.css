@@ -1,92 +1,156 @@
-.create-advising-container {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 32px;
-    background-color: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  .create-advising-container h2 {
-    font-size: 32px;
-    font-weight: 600;
-    color: #1a1a1a;
-    margin-bottom: 24px;
-    text-align: center;
-  }
-  
-  .header-section,
-  .course-section {
-    margin-bottom: 20px;
-  }
-  
-  .section-title {
-    font-size: 24px;
-    font-weight: 500;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 6px;
-    margin-bottom: 16px;
-    color: #111;
-  }
-  
-  .form-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-bottom: 16px;
-  }
-  
-  .form-row label {
-    font-size: 16px;
-    font-weight: 500;
-    color: #333;
-    margin-right: 8px;
-  }
-  
-  .form-row select,
-  .form-row input {
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 15px;
-    min-width: 160px;
-    flex: 1;
-  }
-  
-  .course-row {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-  
-  .course-row select {
-    flex: 1;
-  }
-  
-  button {
-    background-color: #0b3558;
-    color: white;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 500;
-    width: 100%;
-    cursor: pointer;
-    transition: 0.2s;
-  }
-  
-  button:hover {
-    background-color: #06263f;
-  }
-  
-  .message {
-    text-align: center;
-    margin-bottom: 16px;
-    font-weight: 500;
-    color: #006400;
-    background-color: #e6ffe6;
-    padding: 8px 12px;
-    border-radius: 6px;
-  }
-  
+.advising-container {
+  max-width: 850px;
+  margin: 40px auto;
+  padding: 32px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.advising-title {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #1a1a1a;
+}
+
+.advising-message {
+  text-align: center;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+.advising-message.success {
+  color: #0c4f28;
+  background-color: #e6ffe6;
+  border: 1px solid #b6e6b6;
+}
+.advising-remove-btn {
+  background-color: #d32f2f;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.advising-remove-btn:hover {
+  background-color: #a30000;
+}
+
+
+.advising-message.error {
+  color: #a94442;
+  background-color: #fcebea;
+  border: 1px solid #f5c6cb;
+}
+
+.advising-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.advising-term-section {
+  display: flex;
+  gap: 20px;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.advising-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.advising-field label {
+  margin-bottom: 6px;
+  font-weight: 500;
+  font-size: 15px;
+  color: #333;
+}
+
+.advising-field select,
+.advising-field input {
+  padding: 10px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.advising-field input:focus,
+.advising-field select:focus {
+  border-color: #0b3558;
+  box-shadow: 0 0 0 2px rgba(11, 53, 88, 0.2);
+  outline: none;
+}
+
+.advising-subtitle {
+  font-size: 22px;
+  font-weight: 600;
+  color: #0b3558;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 6px;
+  margin-top: 10px;
+}
+
+.advising-course-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.advising-select {
+  padding: 10px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  min-width: 200px;
+}
+
+.advising-add-btn {
+  background-color: #0b3558;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+.advising-action-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.advising-add-btn:hover {
+  background-color: #06263f;
+}
+
+.advising-submit-btn {
+  background-color: #0b3558;
+  color: white;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  width: 100%;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.advising-submit-btn:hover {
+  background-color: #06263f;
+}

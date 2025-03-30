@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from "react";
+import { getStudentAdvisingForms } from "../../../api/user";
+import CreateAdvisingForm from "./CreateAdvisingForm";
+import Modal from "../Modal"; 
+import "../css/AdvisingHistory.css";
 
 const AdvisingHistory = () => {
   const [advisingRecords, setAdvisingRecords] = useState([]);
+  const [selectedRecord, setSelectedRecord] = useState(null);
+  const user = JSON.parse(localStorage.getItem("user"));
+  const studentId = user?.userId;
+
+  const fetchAdvisingRecords = async () => {
+    if (!studentId) return;
+    const data = await getStudentAdvisingForms(studentId);
+    setAdvisingRecords(data || []);
+  };
 
   useEffect(() => {
-    // Replace with actual API call
-    const data = [
-      { date: "2024-03-03", term: "Fall 2024", status: "Pending" },
-      { date: "2023-10-05", term: "Spring 2024", status: "Approved" },
-      { date: "2023-10-01", term: "Spring 2024", status: "Rejected" },
-    ];
-    setAdvisingRecords(data);
-  }, []);
+    fetchAdvisingRecords();
+  }, [studentId]);
 
   return (
     <div className="history-card">
@@ -21,24 +28,41 @@ const AdvisingHistory = () => {
             <th>Date</th>
             <th>Term</th>
             <th>Status</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
           {advisingRecords.length > 0 ? (
             advisingRecords.map((record, index) => (
               <tr key={index}>
-                <td>{record.date}</td>
-                <td>{record.term}</td>
+                <td>{new Date(record.date).toLocaleDateString()}</td>
+                <td>{record.term?.name || "N/A"}</td>
                 <td>{record.status}</td>
+                <td>
+                  {record.status === "Pending" ? (
+                    <button onClick={() => setSelectedRecord(record)} className="edit-btn">Edit</button>
+                  ) : "-"}
+                </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="3" className="no-records">No records to display</td>
+              <td colSpan="4" className="no-records">No records to display</td>
             </tr>
           )}
         </tbody>
       </table>
+
+      {selectedRecord && (
+        <Modal onClose={() => setSelectedRecord(null)}>
+          <CreateAdvisingForm
+            initialData={selectedRecord}
+            isEdit={true}
+            onClose={() => setSelectedRecord(null)}
+            onSuccess={fetchAdvisingRecords}
+          />
+        </Modal>
+      )}
     </div>
   );
 };
