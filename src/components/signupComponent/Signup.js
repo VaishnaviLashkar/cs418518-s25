@@ -19,6 +19,7 @@ const Signup = () => {
   });
   const [otp, setOtp] = useState("");
   const [showOtpInput, setShowOtpInput] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
@@ -46,7 +47,6 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-
     setLoading(true);
     try {
       const response = await signUpUser(
@@ -77,15 +77,14 @@ const Signup = () => {
         otp,
       });
       if (response) {
-        setSuccessMessage(
-          "Email verified! Please wait for admin approval before logging in."
-        );
+        setOtpVerified(true);
+        setSuccessMessage("Email verified! Please wait for admin approval before logging in.");
         setErrors({});
         setFormData({ firstName: "", lastName: "", email: "", password: "" });
         setOtp("");
         setTimeout(() => {
           navigate("/login");
-        }, 3000);
+        }, 2500);
       } else {
         setErrors({ form: response.message });
       }
@@ -108,8 +107,6 @@ const Signup = () => {
     } catch (error) {
       setResendMessage("Something went wrong. Please try again.");
     }
-
-    // Wait a few seconds before allowing resend again
     setTimeout(() => {
       setResendMessage(null);
       setResendLoading(false);
@@ -129,119 +126,127 @@ const Signup = () => {
   return (
     <div className="signup-container">
       <h2 className="signup-title">Sign Up</h2>
-      {successMessage && <div className="success-text">{successMessage}</div>}
-      {errors.form && <div className="error-text">{errors.form}</div>}
 
-      {!showOtpInput ? (
-        <form onSubmit={handleSubmit} className="signup-form">
-          <div className="input-group">
-            <label>First Name</label>
-            <input
-              type="text"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleChange}
-            />
-            {errors.firstName && (
-              <span className="error-text">{errors.firstName}</span>
-            )}
-          </div>
-
-          <div className="input-group">
-            <label>Last Name</label>
-            <input
-              type="text"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-            />
-            {errors.lastName && (
-              <span className="error-text">{errors.lastName}</span>
-            )}
-          </div>
-
-          <div className="input-group">
-            <label>Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-            />
-            {errors.email && (
-              <span className="error-text">{errors.email}</span>
-            )}
-          </div>
-
-          <div className="form-group password-group">
-            <label>Password</label>
-            <div className="password-wrapper">
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                placeholder="Enter your password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-              <button
-                type="button"
-                className="eye-icon"
-                onClick={togglePasswordVisibility}
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
-            </div>
-            {errors.password && (
-              <span className="error-text">{errors.password}</span>
-            )}
-          </div>
-
-          <button type="submit" className="submit-btn" disabled={loading}>
-            {loading ? "Signing Up..." : "Sign Up"}
-          </button>
-
-          <p className="switch-link">
-            Already have an account?{" "}
-            <span onClick={onSwitchToLogin}>Login here</span>
-          </p>
-        </form>
+      {otpVerified ? (
+        <div className="success-screen">
+          <p className="success-text-only">{successMessage}</p>
+        </div>
       ) : (
-        <form onSubmit={handleVerifyOtp} className="signup-form">
-          <div className="input-group">
-            <label>Enter OTP</label>
-            <input
-              type="text"
-              name="otp"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-            />
-          </div>
+        <>
+          {errors.form && <div className="error-text">{errors.form}</div>}
 
-          <button type="submit" className="submit-btn" disabled={loading}>
-            {loading ? "Verifying OTP..." : "Verify OTP"}
-          </button>
+          {!showOtpInput ? (
+            <form onSubmit={handleSubmit} className="signup-form">
+              <div className="input-group">
+                <label>First Name</label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                />
+                {errors.firstName && (
+                  <span className="error-text">{errors.firstName}</span>
+                )}
+              </div>
 
-          <p className="resend-otp-text" style={{ marginTop: "10px" }}>
-            Didn’t receive the code?{" "}
-            <span
-              className="resend-otp-link"
-              onClick={handleResendOtp}
-              style={{
-                cursor: resendLoading ? "not-allowed" : "pointer",
-                color: "#007bff",
-              }}
-            >
-              {resendLoading ? "Resending..." : "Resend OTP"}
-            </span>
-          </p>
+              <div className="input-group">
+                <label>Last Name</label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                />
+                {errors.lastName && (
+                  <span className="error-text">{errors.lastName}</span>
+                )}
+              </div>
 
-          {resendMessage && (
-            <div className="info-text" style={{ marginTop: "5px" }}>
-              {resendMessage}
-            </div>
+              <div className="input-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+                {errors.email && (
+                  <span className="error-text">{errors.email}</span>
+                )}
+              </div>
+
+              <div className="form-group password-group">
+                <label>Password</label>
+                <div className="password-wrapper">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Enter your password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="eye-icon"
+                    onClick={togglePasswordVisibility}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+                {errors.password && (
+                  <span className="error-text">{errors.password}</span>
+                )}
+              </div>
+
+              <button type="submit" className="submit-btn" disabled={loading}>
+                {loading ? "Signing Up..." : "Sign Up"}
+              </button>
+
+              <p className="switch-link">
+                Already have an account?{" "}
+                <span onClick={onSwitchToLogin}>Login here</span>
+              </p>
+            </form>
+          ) : (
+            <form onSubmit={handleVerifyOtp} className="signup-form">
+              <div className="input-group">
+                <label>Enter OTP</label>
+                <input
+                  type="text"
+                  name="otp"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                />
+              </div>
+
+              <button type="submit" className="submit-btn" disabled={loading}>
+                {loading ? "Verifying OTP..." : "Verify OTP"}
+              </button>
+
+              <p className="resend-otp-text" style={{ marginTop: "10px" }}>
+                Didn’t receive the code?{" "}
+                <span
+                  className="resend-otp-link"
+                  onClick={handleResendOtp}
+                  style={{
+                    cursor: resendLoading ? "not-allowed" : "pointer",
+                    color: "#007bff",
+                  }}
+                >
+                  {resendLoading ? "Resending..." : "Resend OTP"}
+                </span>
+              </p>
+
+              {resendMessage && (
+                <div className="info-text" style={{ marginTop: "5px" }}>
+                  {resendMessage}
+                </div>
+              )}
+            </form>
           )}
-        </form>
+        </>
       )}
     </div>
   );

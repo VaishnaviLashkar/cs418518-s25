@@ -133,3 +133,37 @@
     cursor: pointer;
     text-decoration: underline;
 }
+.resend-otp-text {
+    font-size: 0.9rem;
+    text-align: center;
+  }
+  
+  .resend-otp-link {
+    text-decoration: underline;
+    font-weight: 500;
+    color:teal
+  }
+  
+  .resend-otp-link:hover {
+    text-decoration: none;
+  }
+  
+  .info-text {
+    color: green;
+    font-size: 0.9rem;
+  }
+  
+  .success-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 40px;
+  }
+  
+  .success-text-only {
+    color: green;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: center;
+  }
+  
