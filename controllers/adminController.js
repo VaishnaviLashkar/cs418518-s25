@@ -83,17 +83,27 @@ const approveUser = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (!isApprove) {
+    if (isApprove) {
+      user.isApproved = true;
+      await user.save();
+
+      await sendEmail(email, "approve", user.firstName); 
+      return res.status(200).json({ message: "User approved successfully" });
+    } else {
       await User.deleteOne({ email });
-      await sendEmail(email, "reject", user.firstName);
-      return res.status(200).json({ message: "User removed" });
+      await sendEmail(email, "reject", user.firstName); 
+      return res.status(200).json({ message: "User rejected and removed" });
     }
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "User approval failed", error: error.message });
+    console.error("Error approving/rejecting user:", error);
+    return res.status(500).json({
+      message: "User approval process failed",
+      error: error.message,
+    });
   }
 };
+
+
 
 const getUsers = async (req, res) => {
   try {
@@ -397,6 +407,41 @@ const getPrerequisiteCourseLevels = async (req, res) => {
     }
   };
   
+
+const updateAdvisingFormStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, notes } = req.body;
+
+    if (!["Approved", "Rejected"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status. Use 'Approved' or 'Rejected'." });
+    }
+
+    const updatedForm = await CourseAdvising.findByIdAndUpdate(
+      id,
+      { status, notes },
+      { new: true }
+    ).populate("student lastTerm currentTerm");
+
+    if (!updatedForm) {
+      return res.status(404).json({ message: "Advising form not found." });
+    }
+
+    const student = updatedForm.student;
+    const emailType = status === "Approved" ? "formApproved" : "formRejected";
+    await sendEmail(student.email, emailType, student.firstName);
+
+    return res.status(200).json({
+      message: `Form ${status.toLowerCase()} successfully.`,
+      form: updatedForm,
+    });
+  } catch (error) {
+    console.error("Error updating advising form status:", error);
+    return res.status(500).json({ message: "Failed to update form status.", error: error.message });
+  }
+};
+
+  
 module.exports = {
   createAdmin,
   approveUser,
@@ -411,5 +456,6 @@ module.exports = {
   getAllTerms,
   getAllCoursesByLevel,
   getAllCourseLevels,
-  getAllAdvisingForms
+  getAllAdvisingForms,
+  updateAdvisingFormStatus
 };

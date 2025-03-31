@@ -89,6 +89,30 @@ const verifyOtp = async (email, otp) => {
   return { success: true, user };
 };
 
+// const verifyOtpForSignUp = async (req, res) => {
+//   try {
+//     const { email, otp } = req.body;
+//     const result = await verifyOtp(email, otp);
+
+//     if (!result.success)
+//       return res.status(400).json({ message: result.message });
+//     const user = result.user;
+//     user.isEmailVerified = true;
+//     await user.save();
+
+//     const token = jwt.sign(
+//       { userId: user._id, email: user.email },
+//       process.env.JWT_SECRET,
+//       { expiresIn: "7d" }
+//     );
+
+//     return res.status(200).json({ message: "Signup Successful", token, user });
+//   } catch (error) {
+//     res
+//       .status(500)
+//       .json({ message: "Signup verification failed", error: error.message });
+//   }
+// };
 const verifyOtpForSignUp = async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -96,25 +120,23 @@ const verifyOtpForSignUp = async (req, res) => {
 
     if (!result.success)
       return res.status(400).json({ message: result.message });
+
     const user = result.user;
     user.isEmailVerified = true;
     await user.save();
-
-    const token = jwt.sign(
-      { userId: user._id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    return res.status(200).json({ message: "Signup Successful", token, user });
+    return res.status(200).json({
+      message: "Email verified successfully. Please wait for admin approval before logging in.",
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Signup verification failed", error: error.message });
+    res.status(500).json({
+      message: "Signup verification failed",
+      error: error.message,
+    });
   }
 };
 
 const resendOtp = async (req, res) => {
+  console.log("entered resent otp")
   try {
     const email = req.body.email;
     if (!email) {
@@ -171,46 +193,54 @@ const login = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "Email is required for login",
-          data: null,
-        });
+      return res.status(401).json({
+        success: false,
+        message: "Email is required for login",
+        data: null,
+      });
     }
+
     if (!password) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "Password is required for login",
-          data: null,
-        });
+      return res.status(401).json({
+        success: false,
+        message: "Password is required for login",
+        data: null,
+      });
     }
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res
-        .status(401)
-        .json({ success: false, message: "User does not exist", data: null });
+      return res.status(401).json({
+        success: false,
+        message: "User does not exist",
+        data: null,
+      });
     }
-    console.log("the user details are", user)
+
     if (!user.isEmailVerified) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: "User email is not verified. Please sign up again.",
-          data: null,
-        });
+      return res.status(401).json({
+        success: false,
+        message: "User email is not verified. Please sign up again.",
+        data: null,
+      });
     }
-   
+
+    
+    if (!user.isApproved) {
+      return res.status(403).json({
+        success: false,
+        message: "Your account is not yet approved by admin.",
+        data: null,
+      });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Password mismatch", data: null });
+      return res.status(401).json({
+        success: false,
+        message: "Password mismatch",
+        data: null,
+      });
     }
 
     const otp = generateOTP();
@@ -442,19 +472,28 @@ const createAdvisingForm = async (req, res) => {
       return res.status(400).json({ message: "Prerequisites should be an array if provided" });
     }
 
-    const allCourses = [...prerequisites, ...coursePlan].map(c => c.courseName);
-    const uniqueCourses = new Set(allCourses);
-    if (allCourses.length !== uniqueCourses.size) {
-      return res.status(400).json({ message: "Duplicate courses are not allowed across prerequisites and course plan." });
+    const existingForm = await CourseAdvising.findOne({ student: studentId, currentTerm });
+    if (existingForm && existingForm.status !== "Rejected") {
+      return res.status(400).json({
+        message: `You already have a course advising form for this term with status '${existingForm.status}'.`,
+      });
     }
 
-    const completedCourses = await CompletedCourse.find({ student: studentId, term: lastTerm }).populate('course');
-    const completedCourseNames = completedCourses.map(item => item.course.courseName);
+    const allCourses = [...prerequisites, ...coursePlan].map((c) => c.courseName);
+    const uniqueCourses = new Set(allCourses);
+    if (allCourses.length !== uniqueCourses.size) {
+      return res.status(400).json({
+        message: "Duplicate courses are not allowed across prerequisites and course plan.",
+      });
+    }
+
+    const completedCourses = await CompletedCourse.find({ student: studentId, term: lastTerm }).populate("course");
+    const completedCourseNames = completedCourses.map((item) => item.course.courseName);
 
     for (let plan of coursePlan) {
       if (completedCourseNames.includes(plan.courseName)) {
         return res.status(400).json({
-          message: `Course "${plan.courseName}" was already completed in the last term and cannot be added again.`
+          message: `Course "${plan.courseName}" was already completed in the last term and cannot be added again.`,
         });
       }
     }
@@ -480,6 +519,7 @@ const createAdvisingForm = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+
 const updateAdvisingForm = async (req, res) => {
   try {
     const advisingId = req.params.id;

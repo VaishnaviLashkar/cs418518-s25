@@ -22,7 +22,12 @@ const CourseAdvisingSchema = new mongoose.Schema({
       level: { type: String, required: true },
       courseName: { type: String, required: true }
     }
-  ]
+  ],
+  notes: {
+    type: String,
+    default: ""
+  }
 });
+
 
 module.exports = mongoose.model('CourseAdvising', CourseAdvisingSchema);

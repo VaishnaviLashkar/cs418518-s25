@@ -8,6 +8,7 @@ router.post('/approveUser', adminController.approveUser);
 router.post('/addCourse', adminController.addCourse);
 router.post('/addMultipleCourses', adminController.addMultipleCourses);
 router.post('/term/add', adminController.createTerm);
+router.put('/updateFormStatus/:id', adminController.updateAdvisingFormStatus);
 router.put('/updateCoursePrerequisites/:courseId', adminController.updateCoursePrerequisites);
 router.get('/getAllUsers', adminController.getUsers);
 router.get('/getAllCourseLevels', adminController.getAllCourseLevels);

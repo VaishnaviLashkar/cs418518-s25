@@ -37,6 +37,16 @@ const sendEmail = async (to, type, userName, otp = null) => {
                 subject: 'OTP to update password ',
                 text: `Hello ${userName},\n\nYour OTP code is: ${otp}. It is valid for 10 minutes.\n\nRegards,\nSupport Team`,
                 html: `<p>Hello ${userName},</p><p>Your OTP code is: <strong>${otp}</strong>. It is valid for 10 minutes.</p><p>Regards,<br>Support Team</p>`
+            },
+            formApproved: {
+                subject: 'Course Advising Form Approved',
+                text: `Hello ${userName},\n\nYour submitted course advising form has been approved by the administrator. You may proceed with registration.\n\nRegards,\nAdvising Team`,
+                html: `<p>Hello ${userName},</p><p>Your submitted <strong>course advising form</strong> has been <strong>approved</strong> by the administrator.</p><p>You may proceed with registration.</p><p>Regards,<br>Advising Team</p>`
+            },
+            formRejected: {
+                subject: 'Course Advising Form Rejected',
+                text: `Hello ${userName},\n\nYour course advising form has been rejected. Please review the admin notes and submit again if needed.\n\nRegards,\nAdvising Team`,
+                html: `<p>Hello ${userName},</p><p>Your <strong>course advising form</strong> has been <strong>rejected</strong>.</p><p>Please review the admin notes and resubmit if necessary.</p><p>Regards,<br>Advising Team</p>`
             }
         };
 
