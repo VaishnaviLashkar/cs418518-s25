@@ -1,58 +1,63 @@
 .edit-courses-container {
-    padding: 0;
-    margin: 0;
-    width: 100%;
-    box-sizing: border-box;
-    background-color: transparent;
-    border-radius: 0;
-    box-shadow: none;
-  }
-  
-  .title {
-    margin-bottom: 20px;
-    color: #003366;
-    text-align: center;
-  }
-  
-  .table-wrapper {
-    overflow-x: auto;
-  }
-  
-  .course-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: Arial, sans-serif;
-  }
-  
-  .course-table thead {
-    background-color: #003366;
-    color: white;
-  }
-  
-  .course-table thead tr:hover {
-    background-color: inherit !important;
-  }
-  
-  .course-table th,
-  .course-table td {
-    padding: 12px 16px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .course-table tbody tr:hover {
-    background-color: #f1f1f1;
-  }
-  
-  input[type="checkbox"] {
-    transform: scale(1.2);
-    cursor: pointer;
-  }
-  
-  .loading {
-    text-align: center;
-    padding: 40px;
-    font-size: 18px;
-    color: #444;
-  }
-  
+  width: 100%;
+  padding: 2rem;
+  box-sizing: border-box;
+  background-color: #fff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.title {
+  margin-bottom: 20px;
+  color: #003366;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.course-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.course-table thead {
+  background-color: #0a3161;
+  color: white;
+  font-weight: 600;
+}
+
+.course-table th,
+.course-table td {
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+}
+
+.course-table th:last-child,
+.course-table td:last-child {
+  text-align: center;
+}
+
+.course-table tbody tr:hover {
+  background-color: #f5faff;
+}
+
+.course-table input[type="checkbox"] {
+  transform: scale(1.2);
+  cursor: pointer;
+  accent-color: #0a3161;
+  margin: 0;
+}
+
+.loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 18px;
+  color: #333;
+}

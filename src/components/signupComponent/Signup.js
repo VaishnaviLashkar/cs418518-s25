@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import "./Signup.css";
-import { signUpUser, verifyOtpForSignup } from "../../api/auth";
+import {
+  signUpUser,
+  verifyOtpForSignup,
+  resendOtp,
+} from "../../api/auth";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -18,9 +22,10 @@ const Signup = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState(null);
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
-
   const onSwitchToLogin = () => navigate("/login");
 
   const handleChange = (e) => {
@@ -44,7 +49,12 @@ const Signup = () => {
 
     setLoading(true);
     try {
-      const response = await signUpUser(formData.firstName, formData.lastName, formData.email, formData.password);
+      const response = await signUpUser(
+        formData.firstName,
+        formData.lastName,
+        formData.email,
+        formData.password
+      );
       if (response.status) {
         setSuccessMessage(response.data.message);
         setShowOtpInput(true);
@@ -62,16 +72,20 @@ const Signup = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await verifyOtpForSignup({ email: formData.email, otp });
-      console.log("the response from signup",response)
+      const response = await verifyOtpForSignup({
+        email: formData.email,
+        otp,
+      });
       if (response) {
-        setSuccessMessage("Account successfully verified! You can now log in.");
+        setSuccessMessage(
+          "Email verified! Please wait for admin approval before logging in."
+        );
         setErrors({});
         setFormData({ firstName: "", lastName: "", email: "", password: "" });
-        localStorage.setItem("token", response.token);
-        localStorage.setItem("user", JSON.stringify(response.user));
-        localStorage.setItem("isAdmin", JSON.stringify(response.user.isAdmin));
-        navigate("/dashboard");
+        setOtp("");
+        setTimeout(() => {
+          navigate("/login");
+        }, 3000);
       } else {
         setErrors({ form: response.message });
       }
@@ -79,6 +93,27 @@ const Signup = () => {
       setErrors({ form: "OTP verification failed. Please try again." });
     }
     setLoading(false);
+  };
+
+  const handleResendOtp = async () => {
+    if (resendLoading) return;
+    setResendLoading(true);
+    try {
+      const response = await resendOtp(formData.email);
+      if (response.success) {
+        setResendMessage("OTP resent successfully. Please check your email.");
+      } else {
+        setResendMessage(response.message);
+      }
+    } catch (error) {
+      setResendMessage("Something went wrong. Please try again.");
+    }
+
+    // Wait a few seconds before allowing resend again
+    setTimeout(() => {
+      setResendMessage(null);
+      setResendLoading(false);
+    }, 3000);
   };
 
   useEffect(() => {
@@ -133,7 +168,9 @@ const Signup = () => {
               value={formData.email}
               onChange={handleChange}
             />
-            {errors.email && <span className="error-text">{errors.email}</span>}
+            {errors.email && (
+              <span className="error-text">{errors.email}</span>
+            )}
           </div>
 
           <div className="form-group password-group">
@@ -170,7 +207,7 @@ const Signup = () => {
           </p>
         </form>
       ) : (
-        <form onSubmit={handleVerifyOtp}>
+        <form onSubmit={handleVerifyOtp} className="signup-form">
           <div className="input-group">
             <label>Enter OTP</label>
             <input
@@ -180,9 +217,30 @@ const Signup = () => {
               onChange={(e) => setOtp(e.target.value)}
             />
           </div>
+
           <button type="submit" className="submit-btn" disabled={loading}>
             {loading ? "Verifying OTP..." : "Verify OTP"}
           </button>
+
+          <p className="resend-otp-text" style={{ marginTop: "10px" }}>
+            Didn’t receive the code?{" "}
+            <span
+              className="resend-otp-link"
+              onClick={handleResendOtp}
+              style={{
+                cursor: resendLoading ? "not-allowed" : "pointer",
+                color: "#007bff",
+              }}
+            >
+              {resendLoading ? "Resending..." : "Resend OTP"}
+            </span>
+          </p>
+
+          {resendMessage && (
+            <div className="info-text" style={{ marginTop: "5px" }}>
+              {resendMessage}
+            </div>
+          )}
         </form>
       )}
     </div>

@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { getAllCourseAdvisingForms } from "../../../api/admin";
+import {
+  getAllCourseAdvisingForms,
+  updateAdvisingFormStatus,
+} from "../../../api/admin";
 import "./css/AdvisingFormsTab.css";
 
 const AdvisingFormsTab = () => {
@@ -8,12 +11,19 @@ const AdvisingFormsTab = () => {
   const [notes, setNotes] = useState("");
 
   useEffect(() => {
-    const fetchForms = async () => {
-      const result = await getAllCourseAdvisingForms();
-      setForms(result || []);
-    };
     fetchForms();
+
+    const intervalId = setInterval(() => {
+      fetchForms();
+    }, 30000);
+
+    return () => clearInterval(intervalId);
   }, []);
+
+  const fetchForms = async () => {
+    const result = await getAllCourseAdvisingForms();
+    setForms(result || []);
+  };
 
   const formatDate = (dateStr) => {
     try {
@@ -24,14 +34,21 @@ const AdvisingFormsTab = () => {
     }
   };
 
-  const handleAccept = () => {
-    alert("Accepted with notes: " + notes);
-    // TODO: Call backend API to update status
-  };
-
-  const handleReject = () => {
-    alert("Rejected with notes: " + notes);
-    // TODO: Call backend API to update status
+  const handleStatusUpdate = async (status) => {
+    if (!selectedForm?._id) return;
+    const result = await updateAdvisingFormStatus(
+      selectedForm._id,
+      status,
+      notes
+    );
+    if (result?.form) {
+      alert(`Form ${status} successfully`);
+      setSelectedForm(null);
+      setNotes("");
+      fetchForms();
+    } else {
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -43,17 +60,34 @@ const AdvisingFormsTab = () => {
           <div className="advising-box-row">
             <div className="advising-box">
               <h3>Viewing</h3>
-              <p><strong>Sheet ID:</strong> {selectedForm._id}</p>
-              <p><strong>Date Submitted:</strong> {formatDate(selectedForm.date)}</p>
-              <p><strong>Student ID:</strong> {selectedForm.student?._id || "N/A"}</p>
-              <p><strong>Email:</strong> {selectedForm.student?.email || "N/A"}</p>
+              <p>
+                <strong>Sheet ID:</strong> {selectedForm._id}
+              </p>
+              <p>
+                <strong>Date Submitted:</strong> {formatDate(selectedForm.date)}
+              </p>
+              <p>
+                <strong>Student ID:</strong>{" "}
+                {selectedForm.student?._id || "N/A"}
+              </p>
+              <p>
+                <strong>Email:</strong> {selectedForm.student?.email || "N/A"}
+              </p>
             </div>
 
             <div className="advising-box">
               <h3>Header</h3>
-              <p><strong>Last Term:</strong> {selectedForm.lastTerm?.name || "N/A"}</p>
-              <p><strong>GPA:</strong> {selectedForm.lastGPA}</p>
-              <p><strong>Current Term:</strong> {selectedForm.currentTerm?.name || "N/A"}</p>
+              <p>
+                <strong>Last Term:</strong>{" "}
+                {selectedForm.lastTerm?.name || "N/A"}
+              </p>
+              <p>
+                <strong>GPA:</strong> {selectedForm.lastGPA}
+              </p>
+              <p>
+                <strong>Current Term:</strong>{" "}
+                {selectedForm.currentTerm?.name || "N/A"}
+              </p>
             </div>
 
             <div className="advising-box">
@@ -79,10 +113,22 @@ const AdvisingFormsTab = () => {
             className="notes-input"
           />
 
-          <div className="action-buttons">
-            <button className="accept-btn" onClick={handleAccept}>ACCEPT</button>
-            <button className="reject-btn" onClick={handleReject}>REJECT</button>
-          </div>
+          {selectedForm.status === "Pending" && (
+            <div className="action-buttons">
+              <button
+                className="accept-btn"
+                onClick={() => handleStatusUpdate("Approved")}
+              >
+                ACCEPT
+              </button>
+              <button
+                className="reject-btn"
+                onClick={() => handleStatusUpdate("Rejected")}
+              >
+                REJECT
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -108,7 +154,15 @@ const AdvisingFormsTab = () => {
               <td>{form.currentTerm?.name || "N/A"}</td>
               <td>{form.status}</td>
               <td>
-                <button onClick={() => setSelectedForm(form)}>View</button>
+                <button
+                  className="view-btn"
+                  onClick={() => {
+                    setSelectedForm(form);
+                    setNotes(form.notes || "");
+                  }}
+                >
+                  View
+                </button>
               </td>
             </tr>
           ))}

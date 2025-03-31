@@ -1,27 +1,66 @@
 .history-card {
-    margin: 20px auto;
-    max-width: 800px;
-    padding: 20px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  .history-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .history-table th,
-  .history-table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .no-records {
-    text-align: center;
-    font-style: italic;
-    color: gray;
-  }
-  
+  max-width: 850px;
+  margin: 40px auto;
+  padding: 32px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-sizing: border-box;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 15px;
+  min-width: 500px;
+}
+
+.history-table thead {
+  background-color: #0a3161;
+  color: white;
+  font-weight: 600;
+}
+
+.history-table thead tr {
+  padding-bottom: 12px;
+}
+
+.history-table th,
+.history-table td {
+  padding: 18px 16px;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+  line-height: 1.6;
+}
+
+.history-table th:nth-child(4),
+.history-table td:nth-child(4),
+.history-table th:last-child,
+.history-table td:last-child {
+  text-align: center;
+}
+
+.history-table tbody tr:hover {
+  background-color: #f5faff;
+}
+
+.no-records {
+  text-align: center;
+  font-style: italic;
+  color: gray;
+  padding: 20px 0;
+}
+
+.edit-btn {
+  background-color: #0a3161;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  text-decoration: none;
+}

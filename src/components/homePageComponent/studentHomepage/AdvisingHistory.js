@@ -25,6 +25,7 @@ const AdvisingHistory = ({ onEdit }) => {
             <th>Date</th>
             <th>Term</th>
             <th>Status</th>
+            <th>Notes</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -35,16 +36,19 @@ const AdvisingHistory = ({ onEdit }) => {
                 <td>{new Date(record.date).toLocaleDateString()}</td>
                 <td>{record.term?.name || "N/A"}</td>
                 <td>{record.status}</td>
-                <td>
+                <td className="text-center">{record.notes || "-"}</td>
+                <td className="text-center">
                   {record.status === "Pending" ? (
-                    <button onClick={() => onEdit(record)} className="edit-btn">Edit</button>
+                    <button onClick={() => onEdit(record)} className="edit-btn">
+                      Edit
+                    </button>
                   ) : "-"}
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="4" className="no-records">No records to display</td>
+              <td colSpan="5" className="no-records">No records to display</td>
             </tr>
           )}
         </tbody>

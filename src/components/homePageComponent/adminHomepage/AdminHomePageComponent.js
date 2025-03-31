@@ -5,7 +5,7 @@ import AccountRequestsTab from "./AccountRequestsTab";
 import "./css/AdminHomePage.css";
 
 const AdminHomePageComponent = () => {
-  const [activeTab, setActiveTab] = useState("Edit Courses");
+  const [activeTab, setActiveTab] = useState("Advising Forms");
 
   const renderTab = () => {
     switch (activeTab) {

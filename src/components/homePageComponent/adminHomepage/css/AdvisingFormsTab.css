@@ -1,72 +1,116 @@
 .advising-tab-container {
-    padding: 1.5rem;
-    background: #fff;
-  }
-  
-  .advising-details {
-    background: #003366;
-    color: #fff;
-    padding: 1rem;
-    margin-bottom: 2rem;
-    border-radius: 8px;
-  }
-  
-  .advising-box-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-  
-  .advising-box {
-    flex: 1;
-    min-width: 200px;
-    background: #002244;
-    padding: 1rem;
-    border-radius: 6px;
-  }
-  
-  .advising-table {
+    width: 100%;
+    padding: 2rem;
+    box-sizing: border-box;
+    background-color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.advising-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 1rem;
-  }
-  
-  .advising-table th,
-  .advising-table td {
+    margin-top: 1.5rem;
+    min-width: 600px;
+    font-size: 15px;
+}
+
+.advising-table thead {
+    background-color: #0a3161;
+    color: white;
+    font-weight: 600;
+}
+
+.advising-table th,
+.advising-table td {
+    padding: 14px 18px;
+    text-align: left;
+    border-bottom: 1px solid #ccc;
+}
+
+.advising-table th:last-child,
+.advising-table td:last-child {
+    text-align: center;
+}
+
+.advising-table tbody tr:hover {
+    background-color: #f5faff;
+}
+
+.advising-details {
+    margin-top: 2rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 1rem;
+    background-color: #f9f9f9;
+}
+
+.advising-box-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.advising-box {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+.notes-input {
+    margin-top: 10px;
+    width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
-  }
-  
-  .notes-input {
-    width: 100%;
-    margin-top: 10px;
-    padding: 8px;
     border-radius: 4px;
-    border: 1px solid #ddd;
-  }
-  
-  .action-buttons {
-    margin-top: 10px;
+    font-size: 14px;
+}
+
+.action-buttons {
+    margin-top: 1rem;
     display: flex;
-    gap: 10px;
-  }
-  
-  .accept-btn {
-    background-color: green;
-    color: white;
+    gap: 1rem;
+}
+
+.accept-btn,
+.reject-btn {
+    padding: 8px 16px;
     border: none;
-    padding: 8px 12px;
+    font-weight: bold;
+    color: #fff;
     cursor: pointer;
     border-radius: 4px;
-  }
-  
-  .reject-btn {
-    background-color: red;
+}
+
+.accept-btn {
+    background-color: #0a3161;
+}
+
+.view-btn {
+    background-color: #0a3161;
     color: white;
+    text-decoration: none !important;
+    padding: 8px 16px;
     border: none;
-    padding: 8px 12px;
+    font-weight: bold;
     cursor: pointer;
     border-radius: 4px;
-  }
-  
+}
+
+button,
+button:focus,
+button:active,
+button:visited {
+    text-decoration: none;
+}
+
+.reject-btn {
+    background-color: #c62828;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

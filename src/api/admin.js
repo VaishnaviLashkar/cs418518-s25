@@ -65,3 +65,15 @@ export const getAllCourses = async () => {
       return [];
     }
   };
+  export const updateAdvisingFormStatus = async (id, status, notes) => {
+    try {
+      const response = await axios.put(`${API_BASE_URL}/admin/updateFormStatus/${id}`, {
+        status,
+        notes,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error updating advising form status:", error);
+      return null;
+    }
+  };

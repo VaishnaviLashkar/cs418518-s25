@@ -90,3 +90,15 @@ export const resetPassword = async (email, password, newPassword) => {
         return error.response || { success: false, message: "Password reset failed", data: null };
     }
 };
+
+export const resendOtp = async (email) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/users/resendOtp`, { email });
+      return { success: true, data: response.data };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Failed to resend OTP.",
+      };
+    }
+  };
