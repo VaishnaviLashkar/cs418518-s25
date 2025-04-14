@@ -2,12 +2,13 @@ import axios from "axios";
 
 const API_BASE_URL = "http://localhost:3001/api";
 
-export const loginUser = async (email, password) => {
+export const loginUser = async (email, password,recaptchaToken,) => {
 
     try {
         const response = await axios.post(`${API_BASE_URL}/users/login`, {
             email,
-            password
+            password,
+            recaptchaToken,
         });
         return response.data;
     } catch (error) {
@@ -102,3 +103,19 @@ export const resendOtp = async (email) => {
       };
     }
   };
+
+  export const validatePassword = (password) => {
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  
+    if (!password) {
+      return "Password is required.";
+    }
+  
+    if (!passwordRegex.test(password)) {
+      return "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.";
+    }
+  
+    return null; // no error
+  };
+  

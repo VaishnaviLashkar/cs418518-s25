@@ -6,6 +6,7 @@ import {
   signUpUser,
   verifyOtpForSignup,
   resendOtp,
+  validatePassword
 } from "../../api/auth";
 
 const Signup = () => {
@@ -39,7 +40,10 @@ const Signup = () => {
     if (!formData.firstName.trim()) errors.firstName = "First name is required.";
     if (!formData.lastName.trim()) errors.lastName = "Last name is required.";
     if (!formData.email.includes("@")) errors.email = "Invalid email address.";
-    if (formData.password.length < 6) errors.password = "Password must be at least 6 characters.";
+
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) errors.password = passwordError;
+
     setErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -47,6 +51,7 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
+
     setLoading(true);
     try {
       const response = await signUpUser(
@@ -55,8 +60,8 @@ const Signup = () => {
         formData.email,
         formData.password
       );
-      if (response.status) {
-        setSuccessMessage(response.data.message);
+      if (response.status || response.success) {
+        setSuccessMessage(response.data?.message || "OTP sent successfully");
         setShowOtpInput(true);
         setErrors({});
       } else {
@@ -76,7 +81,7 @@ const Signup = () => {
         email: formData.email,
         otp,
       });
-      if (response) {
+      if (response?.success || response?.status) {
         setOtpVerified(true);
         setSuccessMessage("Email verified! Please wait for admin approval before logging in.");
         setErrors({});
@@ -86,7 +91,7 @@ const Signup = () => {
           navigate("/login");
         }, 2500);
       } else {
-        setErrors({ form: response.message });
+        setErrors({ form: response.message || "OTP verification failed" });
       }
     } catch (error) {
       setErrors({ form: "OTP verification failed. Please try again." });
@@ -99,10 +104,10 @@ const Signup = () => {
     setResendLoading(true);
     try {
       const response = await resendOtp(formData.email);
-      if (response.success) {
+      if (response?.success || response?.message?.toLowerCase().includes("otp sent")) {
         setResendMessage("OTP resent successfully. Please check your email.");
       } else {
-        setResendMessage(response.message);
+        setResendMessage(response.message || "Failed to resend OTP.");
       }
     } catch (error) {
       setResendMessage("Something went wrong. Please try again.");

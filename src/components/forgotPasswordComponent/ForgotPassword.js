@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { forgotPassword, verifyOtpForForgotPassword } from "../../api/auth";
+import { forgotPassword, verifyOtpForForgotPassword, resendOtp, validatePassword } from "../../api/auth";
 import { useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "./ForgotPassword.css";
 
 const ForgotPassword = () => {
@@ -9,33 +10,57 @@ const ForgotPassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [step, setStep] = useState(1);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleEmailChange = (e) => setEmail(e.target.value);
-  const handleOtpChange = (e) => setOtp(e.target.value);
-  const handleNewPasswordChange = (e) => setNewPassword(e.target.value);
-  const handleConfirmPasswordChange = (e) => setConfirmPassword(e.target.value);
   const navigate = useNavigate();
+
   const handleSendOtp = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
     setError("");
+    setMessage("");
 
     try {
       const response = await forgotPassword(email);
-      if (response) {
+      if (response?.message?.toLowerCase().includes("otp")) {
         setMessage("OTP has been sent to your email.");
         setStep(2);
       } else {
-        setError(response.message || "Failed to send OTP. Try again.");
+        setError(response.message || "Failed to send OTP.");
       }
-    } catch (err) {
+    } catch {
       setError("Something went wrong. Try again.");
     }
+
     setLoading(false);
+  };
+
+  const handleResendOtp = async () => {
+    if (!email || resendLoading) return;
+
+    setResendLoading(true);
+    setError("");
+    setMessage("");
+
+    try {
+      const response = await resendOtp(email);
+      if (response?.success) {
+        setMessage("OTP resent successfully.");
+      } else {
+        setError(response.message || "Failed to resend OTP.");
+      }
+    } catch {
+      setError("Something went wrong while resending OTP.");
+    }
+
+    setTimeout(() => {
+      setResendLoading(false);
+    }, 3000);
   };
 
   const handleVerifyOtpAndResetPassword = async (e) => {
@@ -45,49 +70,37 @@ const ForgotPassword = () => {
     setError("");
 
     if (newPassword !== confirmPassword) {
-        setError("Passwords do not match.");
-        setLoading(false);
-        return;
+      setError("Passwords do not match.");
+      setLoading(false);
+      return;
+    }
+
+    const passwordError = validatePassword(newPassword);
+    if (passwordError) {
+      setError(passwordError);
+      setLoading(false);
+      return;
     }
 
     try {
-        const response = await verifyOtpForForgotPassword(email, otp, newPassword);
-        
-        console.log("Full Backend Response:", response); // Log the entire response
-        
-        if (response.data) {
-            console.log("the response in forgot password is", response.data);
-            
-            // Ensure response.data contains the expected token & user
-            if (response.data.token && response.data.user) {
-                localStorage.setItem("token", response.data.token);
-                localStorage.setItem("user", JSON.stringify(response.data.user));
-    
-                // Check the user object before storing isAdmin
-                console.log("User object:", response.data.user);
-                if (response.data.user.isAdmin !== undefined) {
-                    localStorage.setItem("isAdmin", JSON.stringify(response.data.user.isAdmin));
-                } else {
-                    console.warn("isAdmin property missing in response");
-                }
-    
-                console.log("crossed the localStorage"); 
-                setMessage("Password reset successfully! Redirecting to login...");
-    
-                setTimeout(() => {
-                    navigate("/dashboard");
-                }, 2000);
-            } else {
-                setError("Invalid response structure. Missing token or user data.");
-            }
-        } else {
-            setError(response.message || "Failed to reset password. Try again.");
-        }
-    } catch (err) {
-        console.error("Error resetting password:", err);
-        setError("Something went wrong. Try again.");
+      const response = await verifyOtpForForgotPassword(email, otp, newPassword);
+      if (response?.data?.token && response?.data?.user) {
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem("isAdmin", JSON.stringify(response.data.user.isAdmin || false));
+
+        setMessage("Password reset successful! Redirecting to dashboard...");
+        setTimeout(() => navigate("/dashboard"), 2000);
+      } else if (response?.success && !response?.data) {
+        setMessage(response.message || "Password updated, but not logged in.");
+        setTimeout(() => navigate("/login"), 2500);
+      } else {
+        setError(response?.message || "Reset failed.");
+      }
+    } catch {
+      setError("Something went wrong. Try again.");
     }
-    
+
     setLoading(false);
   };
 
@@ -101,9 +114,17 @@ const ForgotPassword = () => {
         <form onSubmit={handleSendOtp}>
           <div className="form-group">
             <label>Email</label>
-            <input type="email" name="email" placeholder="Enter your email" value={email} onChange={handleEmailChange} required />
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
-          <button type="submit" disabled={loading}>{loading ? "Sending OTP..." : "Send OTP"}</button>
+          <button type="submit" disabled={loading}>
+            {loading ? "Sending OTP..." : "Send OTP"}
+          </button>
         </form>
       )}
 
@@ -111,17 +132,64 @@ const ForgotPassword = () => {
         <form onSubmit={handleVerifyOtpAndResetPassword}>
           <div className="form-group">
             <label>Enter OTP</label>
-            <input type="text" name="otp" placeholder="Enter OTP" value={otp} onChange={handleOtpChange} required />
+            <input
+              type="text"
+              placeholder="Enter OTP"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              required
+            />
           </div>
-          <div className="form-group">
+
+          <div className="form-group password-group">
             <label>New Password</label>
-            <input type="password" name="newPassword" placeholder="Enter new password" value={newPassword} onChange={handleNewPasswordChange} required />
+            <div className="password-wrapper">
+              <input
+                type={showNewPassword ? "text" : "password"}
+                placeholder="Enter new password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+              />
+              <button type="button" className="eye-icon" onClick={() => setShowNewPassword(!showNewPassword)}>
+                {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
           </div>
-          <div className="form-group">
+
+          <div className="form-group password-group">
             <label>Re-enter New Password</label>
-            <input type="password" name="confirmPassword" placeholder="Re-enter new password" value={confirmPassword} onChange={handleConfirmPasswordChange} required />
+            <div className="password-wrapper">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Re-enter new password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+              <button type="button" className="eye-icon" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
           </div>
-          <button type="submit" disabled={loading}>{loading ? "Verifying OTP & Resetting..." : "Verify & Reset Password"}</button>
+
+          <button type="submit" disabled={loading}>
+            {loading ? "Verifying..." : "Verify & Reset Password"}
+          </button>
+
+          <p className="resend-otp-text">
+            Didn’t receive the OTP?{" "}
+            <span
+              className="resend-otp-link"
+              onClick={handleResendOtp}
+              style={{
+                cursor: resendLoading ? "not-allowed" : "pointer",
+                color: "#007bff",
+              }}
+            >
+              {resendLoading ? "Resending..." : "Resend OTP"}
+            </span>
+          </p>
         </form>
       )}
     </div>

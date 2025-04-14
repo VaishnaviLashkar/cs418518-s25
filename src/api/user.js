@@ -70,6 +70,19 @@ export const updateAdvisingForm = async (advisingId, payload) => {
     };
   }
 };
+export const deleteAdvisingForm = async (advisingId) => {
+  try {
+    const response = await axios.delete(
+      `${API_BASE_URL}/users/deleteAdvisingForm/${advisingId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting advising form:", error.response?.data?.message || error.message);
+    return {
+      message: "Failed to delete advising form"
+    };
+  }
+};
 
 export const getAllTerms = async () => {
   try {

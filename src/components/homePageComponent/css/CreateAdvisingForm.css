@@ -137,21 +137,40 @@
   background-color: #a30000;
 }
 
-.advising-submit-btn {
-  background-color: #0a3161;
-  color: white;
-  padding: 14px;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 500;
-  width: 100%;
-  cursor: pointer;
+.advising-button-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
   margin-top: 20px;
 }
 
-.advising-submit-btn:hover {
+.advising-submit-btn,
+.advising-delete-btn {
+  flex: 1;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.advising-submit-btn {
   background-color: #0a3161;
+  color: white;
+}
+
+.advising-submit-btn:hover {
+  background-color: #062b52;
+}
+
+.advising-delete-btn {
+  background-color: #ff4d4f;
+  color: white;
+}
+
+.advising-delete-btn:hover {
+  background-color: #d9363e;
 }
 
 .advising-cancel-btn {
@@ -162,4 +181,32 @@
   border-radius: 6px;
   font-weight: 500;
   cursor: pointer;
+  color: white;
 }
+.advising-cancel-btn,
+.advising-close-btn {
+  background-color: #848080;
+  padding: 10px 14px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  color: white;
+}
+
+.advising-close-btn:hover {
+  background-color: #6b6b6b;
+}
+
+.advising-form select:disabled,
+.advising-form input:disabled {
+  background-color: #e6e6e6;
+  color: #1a1a1a;
+  border: 1px solid #b0b0b0;
+  cursor: not-allowed;
+  font-weight: 600;
+  opacity: 1;
+}
+
+

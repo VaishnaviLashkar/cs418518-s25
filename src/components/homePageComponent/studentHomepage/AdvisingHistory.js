@@ -38,17 +38,22 @@ const AdvisingHistory = ({ onEdit }) => {
                 <td>{record.status}</td>
                 <td className="text-center">{record.notes || "-"}</td>
                 <td className="text-center">
-                  {record.status === "Pending" ? (
-                    <button onClick={() => onEdit(record)} className="edit-btn">
-                      Edit
-                    </button>
-                  ) : "-"}
+                  <button
+                    onClick={() => onEdit(record)}
+                    className={
+                      record.status === "Pending" ? "edit-btn" : "view-btn"
+                    }
+                  >
+                    {record.status === "Pending" ? "Edit" : "View"}
+                  </button>
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="5" className="no-records">No records to display</td>
+              <td colSpan="5" className="no-records">
+                No records to display
+              </td>
             </tr>
           )}
         </tbody>

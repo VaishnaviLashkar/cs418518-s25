@@ -6,7 +6,8 @@ import {
   getCourseLevels,
   getCoursesByLevel,
   getAllCourseLevels,
-  getAllCoursesByLevel
+  getAllCoursesByLevel,
+  deleteAdvisingForm 
 } from "../../../api/user";
 import "../css/CreateAdvisingForm.css";
 
@@ -91,6 +92,21 @@ const CreateAdvisingForm = ({ initialData = null, isEdit = false, onClose, onSuc
 
     section === "prerequisites" ? setPrerequisites(list) : setPlannedCourses(list);
   };
+  const handleDelete = async () => {
+    if (!initialData?._id) return;
+    const confirmDelete = window.confirm("Are you sure you want to delete this advising form?");
+    if (!confirmDelete) return;
+  
+    const result = await deleteAdvisingForm(initialData._id);
+    if (result?.message?.includes("deleted")) {
+      setMessage("Advising form deleted successfully.");
+      onSuccess?.();
+      onClose?.();
+    } else {
+      showError(result?.message || "Deletion failed.");
+    }
+  };
+  
 
   const addCourseRow = (section) => {
     const updated = section === "prerequisites" ? [...prerequisites] : [...plannedCourses];
@@ -200,9 +216,16 @@ const CreateAdvisingForm = ({ initialData = null, isEdit = false, onClose, onSuc
 
   return (
     <div className="advising-container">
-      <h2 className="advising-title">{isEdit ? "Edit Advising Form" : "Create Course Advising"}</h2>
+      <h2 className="advising-title">
+        {isEdit ? "Edit Advising Form" : "Create Course Advising"}
+      </h2>
       {message && (
-        <p ref={messageRef} className={`advising-message ${message.includes("success") ? "success" : "error"}`}>
+        <p
+          ref={messageRef}
+          className={`advising-message ${
+            message.includes("success") ? "success" : "error"
+          }`}
+        >
           {message}
         </p>
       )}
@@ -211,10 +234,16 @@ const CreateAdvisingForm = ({ initialData = null, isEdit = false, onClose, onSuc
         <div className="advising-term-section">
           <div className="advising-field">
             <label>Last Term:</label>
-            <select value={lastTerm} onChange={(e) => setLastTerm(e.target.value)} disabled={isLocked}>
+            <select
+              value={lastTerm}
+              onChange={(e) => setLastTerm(e.target.value)}
+              disabled={isLocked}
+            >
               <option value="">Select</option>
               {terms.map((term) => (
-                <option key={term._id} value={term._id}>{term.name}</option>
+                <option key={term._id} value={term._id}>
+                  {term.name}
+                </option>
               ))}
             </select>
           </div>
@@ -226,7 +255,8 @@ const CreateAdvisingForm = ({ initialData = null, isEdit = false, onClose, onSuc
               value={lastGPA}
               onChange={(e) => {
                 const val = e.target.value;
-                if (/^(\d{0,1}(\.\d{0,2})?|4(\.0{0,2})?)?$/.test(val)) setLastGPA(val);
+                if (/^(\d{0,1}(\.\d{0,2})?|4(\.0{0,2})?)?$/.test(val))
+                  setLastGPA(val);
               }}
               disabled={isLocked}
               required
@@ -235,29 +265,52 @@ const CreateAdvisingForm = ({ initialData = null, isEdit = false, onClose, onSuc
 
           <div className="advising-field">
             <label>Current Term:</label>
-            <select value={currentTerm} onChange={(e) => setCurrentTerm(e.target.value)} disabled={isLocked}>
+            <select
+              value={currentTerm}
+              onChange={(e) => setCurrentTerm(e.target.value)}
+              disabled={isLocked}
+            >
               <option value="">Select</option>
               {terms.map((term) => (
-                <option key={term._id} value={term._id}>{term.name}</option>
+                <option key={term._id} value={term._id}>
+                  {term.name}
+                </option>
               ))}
             </select>
           </div>
         </div>
 
-        <h3 className="advising-subtitle">Prerequisite Courses</h3>
+        <h3 className="advising-subtitle">History</h3>
         {renderCourseSection("prerequisites", prerequisites)}
 
-        <h3 className="advising-subtitle">Planned Courses</h3>
+        <h3 className="advising-subtitle">Course Plan</h3>
         {renderCourseSection("plannedCourses", plannedCourses)}
 
         {!isLocked && (
-          <button type="submit" className="advising-submit-btn">
-            {isEdit ? "Update" : "Submit"} Advising Form
-          </button>
+          <div className="advising-button-group">
+            <button type="submit" className="advising-submit-btn">
+              {isEdit ? "Update" : "Submit"} Advising Form
+            </button>
+
+            {isEdit && (
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="advising-delete-btn"
+              >
+                Delete Advising Form
+              </button>
+            )}
+          </div>
         )}
+
         {onClose && (
-          <button type="button" onClick={onClose} className="advising-cancel-btn">
-            Cancel
+          <button
+            type="button"
+            onClick={onClose}
+            className={isLocked ? "advising-close-btn" : "advising-cancel-btn"}
+          >
+            {isLocked ? "Close" : "Cancel"}
           </button>
         )}
       </form>

@@ -4,8 +4,10 @@ import {
   loginUser,
   verifyOtpForLogin,
   resendOtp,
+  validatePassword
 } from "../../api/auth";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import ReCAPTCHA from "react-google-recaptcha";
 import "./LoginForm.css";
 
 const LoginPage = () => {
@@ -17,6 +19,7 @@ const LoginPage = () => {
   const [resendLoading, setResendLoading] = useState(false);
   const [resendMessage, setResendMessage] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -35,10 +38,26 @@ const LoginPage = () => {
     setShowPassword((prev) => !prev);
   };
 
+  const handleRecaptchaChange = (token) => {
+    setRecaptchaToken(token);
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) {
+      setErrors({ form: passwordError });
+      return;
+    }
+
+    if (!recaptchaToken) {
+      setErrors({ form: "Please complete the reCAPTCHA verification." });
+      return;
+    }
+
     setLoading(true);
-    const response = await loginUser(formData.email, formData.password);
+    const response = await loginUser(formData.email, formData.password, recaptchaToken);
     if (response.success) {
       setShowOtpInput(true);
       setErrors({});
@@ -66,26 +85,31 @@ const LoginPage = () => {
     }
     setLoading(false);
   };
-
   const handleResendOtp = async () => {
-    if (resendLoading) return;
+    if (!formData.email || resendLoading) return;
+  
     setResendLoading(true);
+    setResendMessage(null);
+    setErrors({});
+  
     try {
       const response = await resendOtp(formData.email);
-      if (response.success) {
+  
+      if (response?.success) {
         setResendMessage("OTP resent successfully. Check your email.");
       } else {
-        setResendMessage(response.message);
+        setResendMessage(response.message || "Failed to resend OTP.");
       }
     } catch (error) {
-      setResendMessage("Failed to resend OTP. Try again.");
+      setResendMessage("Something went wrong while resending OTP.");
     }
+  
     setTimeout(() => {
       setResendMessage(null);
       setResendLoading(false);
     }, 3000);
   };
-
+  
   return (
     <div className="auth-container">
       <h2>Login</h2>
@@ -126,6 +150,13 @@ const LoginPage = () => {
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
+          </div>
+
+          <div className="form-group">
+            <ReCAPTCHA
+              sitekey="6LceXhcrAAAAAN1lFj9TQf0FxV_vmMsVb0vja-YW"
+              onChange={handleRecaptchaChange}
+            />
           </div>
 
           <button type="submit" disabled={loading}>
