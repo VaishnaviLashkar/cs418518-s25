@@ -28,6 +28,11 @@ const sendEmail = async (to, type, userName, otp = null) => {
                 text: `Hello ${userName},\n\nYour Sign Up OTP code is: ${otp}. It is valid for 10 minutes.\n\nRegards,\nSupport Team`,
                 html: `<p>Hello ${userName},</p><p>Your  Sign UpOTP code is: <strong>${otp}</strong>. It is valid for 10 minutes.</p><p>Regards,<br>Support Team</p>`
             },
+            otpResend: {
+                subject: 'OTP for Resend Request',
+                text: `Hello ${userName},\n\nYour  OTP code is: ${otp}. It is valid for 10 minutes.\n\nRegards,\nSupport Team`,
+                html: `<p>Hello ${userName},</p><p>Your OTP code is: <strong>${otp}</strong>. It is valid for 10 minutes.</p><p>Regards,<br>Support Team</p>`
+            },
             otpLogin:{
                 subject: 'Login OTP ',
                 text: `Hello ${userName},\n\nYour Login OTP code is: ${otp}. It is valid for 10 minutes.\n\nRegards,\nSupport Team`,

@@ -4,6 +4,7 @@ const CompletedCourse = require('../models/completedCourse.model');
 const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const axios = require("axios");
 const { request } = require("express");
 const generateOTP = () => {
   return Math.floor(1000 + Math.random() * 9000).toString(); // 4-digit OTP
@@ -134,39 +135,51 @@ const verifyOtpForSignUp = async (req, res) => {
     });
   }
 };
-
 const resendOtp = async (req, res) => {
-  console.log("entered resent otp")
+  console.log("entered resend otp");
   try {
     const email = req.body.email;
     if (!email) {
-      return res.status(500).json({ message: "email is required" });
+      return res.status(400).json({ success: false, message: "Email is required" });
     }
+
     const user = await User.findOne({ email: email });
     if (!user) {
-      return res.status(500).json({ message: "user not found" });
+      return res.status(404).json({ success: false, message: "User not found" });
     }
+
     const otp = generateOTP();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
     user.otp = otp;
     user.otpExpiresAt = expiresAt;
     await user.save();
-    await sendEmail(email, "otp", user.firstName, otp);
-    return res.status(200).json({ message: "otp sent successfully" });
+
+    await sendEmail(email, "otpResend", user.firstName, otp);
+
+    return res.status(200).json({
+      success: true,
+      message: "OTP sent successfully"
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "resending otp failed", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Resending OTP failed",
+      error: error.message
+    });
   }
 };
+
 const passwordValidation = (password) => {
   const passwordRegex =
-    /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
   if (!password || !passwordRegex.test(password)) {
-    return "Password must be at least 6 characters long, include at least one uppercase letter, one number, and one special character";
+    return "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.";
   }
-  return null; // No error
+
+  return null;
 };
+
 
 const SignUpValidations = async (firstName, lastName, email, password) => {
   if (!firstName || firstName.length < 2) {
@@ -187,46 +200,47 @@ const SignUpValidations = async (firstName, lastName, email, password) => {
   }
 
   return null;
-};
-const login = async (req, res) => {
+};const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, recaptchaToken } = req.body;
 
-    if (!email) {
-      return res.status(401).json({
+    if (!recaptchaToken) {
+      return res.status(400).json({
         success: false,
-        message: "Email is required for login",
+        message: "reCAPTCHA token missing",
         data: null,
       });
     }
 
-    if (!password) {
-      return res.status(401).json({
+    const verificationURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET}&response=${recaptchaToken}`;
+    const { data } = await axios.post(verificationURL);
+    if (!data.success) {
+      return res.status(400).json({
         success: false,
-        message: "Password is required for login",
+        message: "reCAPTCHA verification failed",
         data: null,
       });
+    }
+
+    if (!email) {
+      return res.status(401).json({ success: false, message: "Email is required for login", data: null });
+    }
+
+    if (!password) {
+      return res.status(401).json({ success: false, message: "Password is required for login", data: null });
     }
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "User does not exist",
-        data: null,
-      });
+      return res.status(401).json({ success: false, message: "User does not exist", data: null });
     }
 
     if (!user.isEmailVerified) {
-      return res.status(401).json({
-        success: false,
-        message: "User email is not verified. Please sign up again.",
-        data: null,
-      });
+      return res.status(401).json({ success: false, message: "User email is not verified. Please sign up again.", data: null });
     }
 
-    
-    if (!user.isApproved) {
+    // ✅ Skip approval check if admin
+    if (!user.isAdmin && !user.isApproved) {
       return res.status(403).json({
         success: false,
         message: "Your account is not yet approved by admin.",
@@ -236,11 +250,7 @@ const login = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Password mismatch",
-        data: null,
-      });
+      return res.status(401).json({ success: false, message: "Password mismatch", data: null });
     }
 
     const otp = generateOTP();
@@ -264,6 +274,7 @@ const login = async (req, res) => {
     });
   }
 };
+
 
 const verifyOtpForLogin = async (req, res) => {
   try {
@@ -362,46 +373,60 @@ const forgotPassword = async (req, res) => {
 const verifyOtpForForgotPassword = async (req, res) => {
   try {
     const { email, otp, newPassword } = req.body;
-    console.log("entered with email: " ,email,"password: " ,newPassword,"otp: " ,otp)
+
     const result = await verifyOtp(email, otp);
-    console.log("the result is",result);
-    if (!result.success)
+    if (!result.success) {
       return res.status(400).json({ message: result.message });
+    }
 
     const user = result.user;
+
     const passwordError = passwordValidation(newPassword);
     if (passwordError) {
       return res.status(400).json({ message: passwordError });
     }
+
     user.password = await bcrypt.hash(newPassword, 10);
     user.otp = null;
     user.otpExpiresAt = null;
     await user.save();
-    const token = jwt.sign(
-        { userId: user._id, email: user.email },
-        process.env.JWT_SECRET,
-        { expiresIn: "7d" }
-      );
-    return res.status(200).json({
+
+    if (!user.isAdmin && !user.isApproved) {
+      return res.status(200).json({
         success: true,
-        message:  "Password updated successfully",
-        data: {
-          token,
-          user: {
-            userId: user._id,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            isAdmin: user.isAdmin,
-          },
-        },
+        message: "Password updated, but your account is not yet approved by admin.",
+        data: null
       });
+    }
+
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Password updated successfully",
+      data: {
+        token,
+        user: {
+          userId: user._id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          isAdmin: user.isAdmin,
+        },
+      },
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Password reset failed", error: error.message });
+    return res.status(500).json({
+      message: "Password reset failed",
+      error: error.message,
+    });
   }
 };
+
 
 const updateUserInformation = async (req, res) => {
   try {
@@ -458,11 +483,16 @@ const getUserInfo = async(req, res) => {
             error: error.message,
           });
       }
-};
-
-const createAdvisingForm = async (req, res) => {
+};const createAdvisingForm = async (req, res) => {
   try {
-    const { studentId, lastTerm, currentTerm, lastGPA, prerequisites = [], coursePlan } = req.body;
+    const {
+      studentId,
+      lastTerm,
+      currentTerm,
+      lastGPA,
+      prerequisites = [],
+      coursePlan
+    } = req.body;
 
     if (!studentId || !lastTerm || !currentTerm || lastGPA === undefined || !Array.isArray(coursePlan)) {
       return res.status(400).json({ message: "All fields are required" });
@@ -479,7 +509,7 @@ const createAdvisingForm = async (req, res) => {
       });
     }
 
-    const allCourses = [...prerequisites, ...coursePlan].map((c) => c.courseName);
+    const allCourses = [...prerequisites, ...coursePlan].map(c => c.courseName);
     const uniqueCourses = new Set(allCourses);
     if (allCourses.length !== uniqueCourses.size) {
       return res.status(400).json({
@@ -487,15 +517,38 @@ const createAdvisingForm = async (req, res) => {
       });
     }
 
-    const completedCourses = await CompletedCourse.find({ student: studentId, term: lastTerm }).populate("course");
-    const completedCourseNames = completedCourses.map((item) => item.course.courseName);
+    const completedCourses = await CompletedCourse.find({ student: studentId }).populate("course");
+    const completedCourseNames = completedCourses.map(item => item.course.courseName);
 
-    for (let plan of coursePlan) {
-      if (completedCourseNames.includes(plan.courseName)) {
-        return res.status(400).json({
-          message: `Course "${plan.courseName}" was already completed in the last term and cannot be added again.`,
-        });
-      }
+    const repeatedCompleted = [...coursePlan, ...prerequisites].filter(plan =>
+      completedCourseNames.includes(plan.courseName)
+    );
+    if (repeatedCompleted.length > 0) {
+      const names = repeatedCompleted.map(c => `"${c.courseName}"`).join(", ");
+      return res.status(400).json({
+        message: `Course(s) ${names} were already completed in a previous term.`,
+      });
+    }
+
+    const activeForms = await CourseAdvising.find({
+      student: studentId,
+      status: { $in: ["Pending", "Approved"] },
+    });
+
+    const previouslyRequestedCourses = new Set();
+    activeForms.forEach(form => {
+      form.coursePlan.forEach(c => previouslyRequestedCourses.add(c.courseName));
+      form.prerequisites.forEach(c => previouslyRequestedCourses.add(c.courseName));
+    });
+
+    const repeatedInForms = [...coursePlan, ...prerequisites].filter(plan =>
+      previouslyRequestedCourses.has(plan.courseName)
+    );
+    if (repeatedInForms.length > 0) {
+      const names = repeatedInForms.map(c => `"${c.courseName}"`).join(", ");
+      return res.status(400).json({
+        message: `Course(s) ${names} are already part of another active advising form.`,
+      });
     }
 
     const newAdvising = new CourseAdvising({
@@ -519,6 +572,7 @@ const createAdvisingForm = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+
 
 const updateAdvisingForm = async (req, res) => {
   try {
@@ -596,6 +650,27 @@ const getAdvisingFormsByStudent = async (req, res) => {
   }
 };
 
+const deleteAdvisingForm = async (req, res) => {
+  try {
+    const advisingId = req.params.id;
+
+    const advisingForm = await CourseAdvising.findById(advisingId);
+
+    if (!advisingForm) {
+      return res.status(404).json({ message: "Advising form not found" });
+    }
+
+    if (advisingForm.status !== "Pending") {
+      return res.status(400).json({ message: "Only pending advising forms can be deleted" });
+    }
+
+    await CourseAdvising.findByIdAndDelete(advisingId);
+
+    res.status(200).json({ message: "Advising form deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
 
 module.exports = {
   SignUp,
@@ -610,5 +685,6 @@ module.exports = {
   getUserInfo,
   createAdvisingForm,
   getAdvisingFormsByStudent,
-  updateAdvisingForm
+  updateAdvisingForm,
+  deleteAdvisingForm
 };

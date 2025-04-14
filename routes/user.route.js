@@ -11,6 +11,7 @@ router.post('/verifyOtpForLogin', userController.verifyOtpForLogin);
 router.post('/resetPassword', userController.resetPassword);
 router.post('/forgotPassword', userController.forgotPassword);
 router.post('/createForm', userController.createAdvisingForm );
+router.delete('/deleteAdvisingForm/:id', userController.deleteAdvisingForm);
 router.put('/updateAdvisingForm/:id', userController.updateAdvisingForm);
 router.post('/verifyOtpForForgotPassword', userController.verifyOtpForForgotPassword);
 router.post('/updateUserInformation', userController.updateUserInformation);
