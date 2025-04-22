@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:3001/api";
+const API_BASE_URL = "https://cs418518-s25-production.up.railway.app/api";
 
 export const getUsers = async (email) => {
 
