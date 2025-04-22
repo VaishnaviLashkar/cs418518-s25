@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Clickjacking Test Page</title>
+  <style>
+    body {
+      background-color: #f0f8ff;
+      font-family: Arial, sans-serif;
+      padding: 30px;
+    }
+    h3 {
+      color: #333366;
+    }
+    iframe {
+      border: 2px solid #444;
+      margin-bottom: 40px;
+      background-color: white;
+    }
+  </style>
+</head>
+<body>
+  <h2 style="text-align:center;">🔍 Clickjacking Protection Demo</h2>
+
+  <h3>1️⃣ Trying to embed <code>protected.html</code> (should be blocked)</h3>
+  <iframe src="protected.html" width="800" height="200"></iframe>
+
+  <h3>2️⃣ Trying to embed <code>unprotected.html</code> (should work)</h3>
+  <iframe src="unprotected.html" width="800" height="200"></iframe>
+</body>
+</html>
