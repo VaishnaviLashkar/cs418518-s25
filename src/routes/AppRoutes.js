@@ -6,6 +6,8 @@ import Header from "../Layouts/Header"
 import ProfilePage from "../pages/ProfilePage"
 import ChangePasswordPage from "../pages/ChangePasswordPage"
 import ForgotPasswordPage from "../pages/ForgotPasswordPage"
+import AdvisingFormView from "../pages/AdminPageView";
+
 const AppRoutes = () => {
   return (
     <Router>
@@ -19,6 +21,7 @@ const AppRoutes = () => {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/change-password" element={<ChangePasswordPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/admin/advising-form/:id" element={<AdvisingFormView />} />
       </Routes>
     </Router>
   );

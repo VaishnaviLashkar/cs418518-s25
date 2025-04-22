@@ -67,6 +67,12 @@
     border-radius: 4px;
     font-size: 14px;
 }
+.notes-input:disabled {
+    background: rgb(194, 191, 191);
+    cursor: not-allowed;
+    color:rgb(5, 4, 4)
+
+}
 
 .action-buttons {
     margin-top: 1rem;
@@ -75,7 +81,7 @@
 }
 
 .accept-btn,
-.reject-btn {
+.rejection-btn {
     padding: 8px 16px;
     border: none;
     font-weight: bold;
@@ -97,6 +103,7 @@
     font-weight: bold;
     cursor: pointer;
     border-radius: 4px;
+    margin-top: 8px;
 }
 
 button,
@@ -106,8 +113,9 @@ button:visited {
     text-decoration: none;
 }
 
-.reject-btn {
+.rejection-btn {
     background-color: #c62828;
+    
 }
 
 button:disabled {

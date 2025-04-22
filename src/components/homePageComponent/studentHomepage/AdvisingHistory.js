@@ -14,7 +14,25 @@ const AdvisingHistory = ({ onEdit }) => {
   };
 
   useEffect(() => {
-    fetchAdvisingRecords();
+    if (!studentId) return;
+
+    let isMounted = true;
+
+    const fetchAndUpdate = async () => {
+      const data = await getStudentAdvisingForms(studentId);
+      if (isMounted) {
+        setAdvisingRecords(data || []);
+      }
+    };
+
+    fetchAndUpdate(); 
+
+    const intervalId = setInterval(fetchAndUpdate, 10000); 
+
+    return () => {
+      isMounted = false;
+      clearInterval(intervalId); 
+    };
   }, [studentId]);
 
   return (
